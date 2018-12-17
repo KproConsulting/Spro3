@@ -1,1 +1,132 @@
+/** 
+ * REGOLA TAG MODIFICHE
+ * - Data + Tag univoco + Nota
+ * Esempio: 
+ * - 11/01/2017 kpro@tom110120170926 Definizione regola tag modifiche
+ * Dove: 
+ * -- Data: Data in cui è stata eseguita la modifica
+ * -- Tag univoco: Tale tag deve identificare univocamente la modifica fatta, per fare ciò sarà composto da:
+ * ---- kpro@: Costante per indetificare che è una modifica kpro
+ * ---- 3 caratteri: Identifica il programmatore: ad esempio tom = Tomiello e bid = Bidese
+ * ---- 12 numeri: Rappresenta un numeratore univoco (per tutta la modifica) composto da giorno + mese + anno + ora + minuto (110120170926 = 11/01/2017 09:26) in cui si è iniziato la modifica
+ * Nota: Breve descrizione della modifica fatta
+ *
+ * Grazie a tale tag sarà sufficiente lanciare un comando del tipo
+ * grep -rn "kpro@tom110120170926" *
+ * Per individuare tutti i file (con le relative righe) in cui è stata fatta la modifica a cui tale tag fa riferimento
+ */
 
+Release attuale: 0
+ 
+VTE Sicurezza 2.0
+- 11/01/2017 kpro@tom170120171800 Modifica TouchLogin per consentire l'accesso da app Kpro
+- 30/01/2017 kpro@tom300120171013 Correzione popup assegnazione risorse manutenzione (copiare per intero la cartella PopupAssegnazioneRisorseManutenzioni e il file AssegnaRisorseManutenzioni.js)
+- 31/01/2017 kpro@tom310120170912 Modifica dimensione datepicker caricamento storico formazione
+- 01/02/2017 kpro@tom010220170830 Webservice per gestione App Android (Copiare l'intera cartella modules/SDK/src/KpAndroidApp)
+- 01/02/2017 kpro@tom010220170902 Script aggiornamento automatico stato mansioni-risorse per dipendenti con data fine rapporto
+- 07/02/2017 kpro@tom070220171115 Correzione bug Gantt quando si cancellano elementi in modo anomalo (ad esempio dalle listview) lasciando record sporchi
+- 13/02/2017 kpro@tom130220171045 Modifica firma partecipazioni corso (non grafometrica) togliendo le anteprime delle firme
+- 15/02/2017 kpro@tom150220171551 Modifica per cancellazione png firma dopo la generazione del pdf con gli attestati di partecipazione corso
+- 21/02/2017 kpro@bid210220171400 Creazione file standard per import Risorse e Formazione
+- 24/02/2017 kpro@bid240220171000 Supporto apici strani nei file import_utils.php
+- 09/03/2017 kpro@tom090320171448 Modifica per visualizzazione png firma nel PDF dell'intervento anche in presenza di infrastrutture strane
+- 13/03/2017 kpro@bid130320171700 Aggiunta funzione per creazione servizi a contratto da ordine di vendita nel salvataggio di un ordine di vendita
+- 24/03/2017 kpro@tom240320171620 Eliminare la scritta "Settimana" nella visualizzazione mensile del gantt
+- 31/03/2017 kpro@tom310320171128 Limito la vista grafica del gantt delle scadenze a 5 anni in avanti
+- 03/04/2017 kpro@bid030420171000 Correzione bug Consegna DPI che non salvava il documento allegato tramite funzione custom
+- 05/04/2017 kpro@bid050420171730 Aggiunta funzione UserIsAdmin per fare si che anche gli utenti amministratori possano usare Associa Mansioni e Associa Checklists anzichè solo l'utente admin
+- 06/04/2017 kpro@bid060420171100 Aggiunto controllo mansione-risorsa cancellata nel popup delle risorse da aggiungere nella schermata custom di inserimento esiti visite mediche
+- 06/04/2017 kpro@tom060420171502 Modifica per inviare la mail di accesso al portale ai contatti dei fornitori
+- 06/04/2017 kpro@bid060420171700 Aggiunta funzione per sostituire virgola con punto quando si normalizza un numero per i vari import
+- 18/04/2017 kpro@bid180420170930 Modifica programmi di import da Gemma e Medichouse per rinominare il file a fine importazione
+- 19/04/2017 kpro@bid190420170930 Modifica programma import Componenti da Gemma per migliore gestione dell'aggiornamento delle chiavi dei componenti (nuova tabella nel DB kp_import_componenti_gemma)
+- 19/04/2017 kpro@bid190420171000 Modificato percorso file impot_utils.php e export_utils.php per poter includerli dai vari programmi senza duplicati
+- 21/04/2017 kpro@bid210420170930 Aggiunti programmi di import standard Risorse-Mansioni e Formazione da interfaccia
+- 27/04/2017 kpro@tom270420170918 Modifiche per poter generare un intervento a partire da un evento di calendario (dal popup dell'evento)
+- 02/05/2017 kpro@tom020520171019 Modifiche per poter generare un intervento pianificazione (ProjectTimecards) a partire da un evento di calendario (dal popup dell'evento)
+- 03/05/2017 kpro@bid030520170900 Modificato programma schedulato di import standard Formazione per agganciare il Corso di Formazione
+- 08/05/2017 kpro@bid080520171220 Aggiunto Presave al modulo Prodotti per rendere obbligatori dei campi quando il tipo prodotto è Rifiuto
+- 09/05/2017 kpro@bid090520170900 Modifica programma custom Consegna DPI per rendere la data scadenza dei DPI non obbligatoria
+- 09/05/2017 kpro@bid090520171000 Modifica campi data nella schermata custom Consegna DPI per utilizzare il nuovo standard Bootstrap
+
+S-PRO 1.0
+- 25/05/2017 kpro@tom250520171530 Modifica al popup di conversione dei Lead in Account
+- 25/05/2017 kpro@tom250520171804 Modifica affinché la generazione di un evento da un ticket o da una operazione proponga la tipologia di evento corretta
+- 07/06/2017 kpro@tom070620171006 Correzione bug related documenti nel modulo servizi
+- 26/07/2017 kpro@tom260720171724 Permette di vedere una doppia related ai TipiCorso (nel modulo TipiCorso stesso)
+- 27/07/2017 kpro@tom270720170938 Gestione tipi corso validi anche per altri tipi corso
+- 24/11/2017 kpro@bid241120171400 Modifica al cuore (js del modulo Timecards) per gestire i campi Ore Effettive e Ore Contrattuali
+- 29/11/2017 kpro@bid291120171400 Modifiche al cuore per inserimento gestione tasse custom
+- 22/12/2017 kpro@tom221220171400 Modifiche al cuore per inserire l'immagine di loading nei moduli con blocco prodotti
+- 04/01/2018 kpro@tom040120180831 Correzione massedit tasse servizi
+- 08/01/2018 kpro@bid080120171100 Correzione popup destinatari nel popup di invio mail
+- 14/02/2018 kpro@tom140220181508 Correzione per disassociare (dalla related) i Tipi Corso Validi anche Per
+- 02/03/2018 kpro@bid020320181600 Modifica per non nascondere le tasse extra in anagrafica prodotti e servizi
+- 23/03/2018 kpro@tom230320181207 Correzioni tasti help magnitudo e probabilità privacy
+- 29/03/2018 kpro@bid290320180900 Correzione import custom risorse-mansioni per scrivere il campo Tasse in quanto obbligatorio nell'azienda
+- 29/03/2018 kpro@bid290320181050 Correzione import custom risorse-mansioni per importare 5 colonne di mansioni-risorsa anzichè 4
+- 13/04/2018 kpro@bid130420181425 Correzione tasto logout nel portale clienti che non puntava al file corretto e quindi non faceva il logout
+- 13/04/2018 kpro@bid130420181720 Correzione documenti duplicati nel portale se collegati sia all'azienda che alla risorsa
+- 14/04/2018 kpro@tom160420181414 Modifica per dire che un corso di aggiornamento è un "da eseguire entro" e per settare la data sulla base del corso precedente
+- 17/04/2018 kpro@bid170420180940 Correzione nel portale clienti in quanto non si vedeva lo stato "Eseguire entro" per la formazione
+- 18/04/2018 kpro@bid180420181220 Correzione nel calcolo delle date scadenza pagamenti per evitare che fatture in data 31-01-2018 con pagamento 30gg FM vadano al 31-03-2018
+- 20/04/2018 kpro@bid200420181500 Modifica al cuore (js del modulo KpFormazione) per calcolare la data scadenza corso in automatico
+- 30/04/2018 kpro@bid300420180900 Correzione dei datalist e dei filtri del popup Lista Risorse nella schermata di Gestione Partecipazioni Corso Formazione
+- 09/05/2018 kpro@bid090520181030 Correzione bug che non inviava mai le mail nella generazione attestati
+- 18/05/2018 kpro@bid180520181030 Modifica al cuore per permettere di eseguire delle somme nei report sul campo Ore Effettive del modulo Interventi
+- 18/05/2018 kpro@bid180520181630 Modifica al cuore per aggiungere tab custom nel dettaglio di una pianificazione
+- 21/05/2018 kpro@bid210520181600 Correzione bug che duplicava lo stesso ticket/canone più volte con la duplicazione speciale degli ordini di vendita
+- 23/05/2018 kpro@bid230520181800 Modifica al cuore per rendere decenti anche le icone di aiuto dei campi relazionati
+- 24/05/2018 kpro@bid240520180920 Correzione bug nel programma di calcolo situazione visite mediche che non scriveva data visita e data fine validità per gli esiti senza visita medica collegata
+- 25/05/2018 kpro@bid250520181000 Modifica al cuore (js del modulo Documents) per calcolare la data scadenza documento in automatico
+- 04/06/2018 kpro@tom040620181438 Correzione tasto "Indietro" nel popup standard
+
+S-PRO 2.0
+- 15/06/2018 kpro@tom150620181140 Migrazione vte18.05
+- 20/06/2018 kpro@bid200620181800 Migrazione vte18.05
+- 11/07/2018 kpro@bid110720181745 Correzione schermata custom Consegna DPI per non mostrare mai i bottoni di modifica/cancellazione righe in consegne già confermate
+- 20/07/2018 kpro@bid200720181500 Aggiunto supporto per campo Data Inizio Pianificata nel modulo Ticket per la funzione Ticket Ripetitivo
+- 25/07/2018 kpro@bid250720181030 Correzione bug che non calcolava più split payment e ritenuta d'acconto nella generazione fatture da odf
+- 25/07/2018 kpro@bid250720181755 Correzione bug che non riportava più l'azienda nella creazione ticket da ordine di vendita
+- 01/08/2018 kpro@bid010820181550 Correzione bug che cancellava tutte le righe delle fatture che venivano approvate con il programma di approvazione custom
+- 08/08/2018 kpro@tom080820181453 Correzione bug che impedica la cancellazione di tipi corso
+- 23/08/2018 kpro@bid230820181130 Correzione bug che non mostrava il contatore nella related Documenti del modulo Tipi Documenti  (necessario lancio manuale della query)
+- 24/08/2018 kpro@bid240820181000 Correzione query fallite nelle esportazioni standard 
+- 29/08/2018 kpro@bid290820181150 Implementato presave del modulo Interventi per gestire i controlli nel Mass Edit e anche per il campo Ore Consuntive (contrattuali)
+- 29/08/2018 kpro@bid290820181600 correzioni per php7
+- 29/08/2018 kpro@bid290820181815 Correzione bug che faceva si che, nell'import di Impianti-Componenti-Checklists, la frequenza delle checklists fosse sempre vuota
+- 31/08/2018 kpro@bid310820180850 Correzione bug che cancellava righe da Situazione Documenti e Situazione Documenti Fornitori e che metteva il documento Scaduto se aveva data scadenza vuota
+- 04/09/2018 kpro@bid040920181110 Correzione bug e implementazioni varie nella generazione massiva OdF e generazione OdF da ticket
+- 04/09/2018 kpro@tom040920181634 Correzione per riportare il prezzo servizio delle righe preventivo, ordine, fattura, ecc....
+- 05/09/2018 kpro@bid050920180930 Correzione bug che mostrava i campi data dei blocchi relazionati nel PDFMaker in formato aaaa-mm-gg anzichè gg-mm-aaaa
+- 05/09/2018 kpro@bid050920180945 Correzione bug che bloccava l'apertura del popup di creazione evento/compito attraverso il tasto + nel modulo Calendario
+- 05/09/2018 kpro@bid050920181500 Implementato supporto della variabile _tipo_documento_ nei template e-mail per l'invio massivo fatture e aggiunto supporto anche per le variabili standard dei template email (solo nome azienda, numero fattura, tipo documento)
+- 07/09/2018 kpro@bid070920181520 Aggiunta funzione per ricalcolare le aziende collegate agli attestati subito dopo la creazione
+- 13/09/2018 kpro@bid130920181011 Correzione bug che non faceva girare la situazione documenti standard durante la notte per causa di un campo mancante (necessario lancio manuale della query)
+- 18/09/2018 kpro@bid180920180920 Correzione bug che non collegava il documento fattura alla creazione di un sollecito di pagamento
+- 04/10/2018 kpro@tom041020181620 Correzione bug PDFMaker, in alcune sittuazioni (vedi revisioni documenti) non permetteva la stampa delle related
+- 11/10/2018 kpro@bid111020181650 Correzione bug che non permetteva la modifica dei servizi a contratto con progresso maggiore del 100%
+- 05/11/2018 kpro@tom051120181625 Correzione bug che non permetteva di ordinare i documenti per cartella
+- 12/11/2018 kpro@tom121120181158 Correzione campi valuta in export excel da Report
+- 12/11/2018 kpro@tom121120181534 Correzione bug che impediva di esportare i reconrd in csv quando si eseguivano dei fitri sui campi relazionati
+- 14/11/2018 kpro@bid141120180955 Correzione bug che non permetteva di filtrare correttamente nelle listview se c'erano già determinati filtri impostati
+- 15/11/2018 kpro@bid151120181550 Aggiunta funzione per riportare in automatico la Business Unit dall'azienda o dall'opportunità alla creazione di un Report Attività
+- 21/11/2018 kpro@bid211120181430 Aggiunta funzione per scrivere il periodo di competenza nella descrizione degli OdF generati dai canoni
+- 03/12/2018 kpro@bid031220181220 Commentata funzione che indirizzava al portale Verifiche Manutenzioni per le manutenzioni con tipologia Verifica
+- 05/12/2018 kpro@bid051220181600 Correzione bug che generava un loop infinito di invii mail per i report schedulati
+
+S-PRO 3.0
+- 30/07/2018 kpro@tom300720181104 Modifica situazione manutenzioni per escludere i componenti con apposito flag "Escludi da Situzione Manutenzioni"
+- 30/07/2018 kpro@tom300720181130 Modifica generazione manutenzioni; se si genera una manutenzione per un componente con flag "Componente Principale" il sistema automaticamente includerà mella manutenzione anche gli altri componenti dell'impianto
+- 31/07/2018 kpro@tom310720180957 Modifica import standard impianti per importare anche informazioni indirizzo dei componenti
+- 28/08/2018 kpro@tom082820180913 Modifica per caricare le schede tecniche dei servizi in allegato alla mail di invio PDF
+- 05/09/2018 kpro@bid050920181625 Modifica per paramettrizzare il raggruppamento delle fatture per commessa
+- 13/09/2018 kpro@tom130920181516 Modifica per prendere automaticamente il prezzo di listino nei preventivi e ordini di vendita
+- 13/09/2018 kpro@bid130920181600 Aggiunte per Business Intelligence Spro
+- 14/09/2018 kpro@bid140920180950 Modifica per permettere la modifica di nome mittente, email mittente, cc e bcc per l'invio massivo fatture, invio solleciti e avvisi scadenziario senza modificare il cuore
+- 20/09/2018 kpro@bid200920181200 Tema Spro Next
+- 24/09/2018 kpro@bid240920181055 Aggiunto tipo ordine "A progetto con canone" che permette la generazione di canoni ma anche la fatturazione diretta dall'ordine
+- 25/09/2018 kpro@bid250920181215 Aggiunta possibilità di emissione automatica delle note di credito e gestione fatture di acconto
+- 05/10/2018 kpro@bid051020181500 Spostamento di alcune schermate custom dei tab in list view a livello di classe del modulo
+- 17/10/2018 kpro@bid171020181220 Aggiunta possibilità di calcolare il fatturato nelle commesse dalle fatture o dagli OdF
+- 23/11/2018 kpro@bid231120181100 Aggiunta funzione per riportare alcuni campi dal corso di formazione durante la creazione di un giorno di formazione
