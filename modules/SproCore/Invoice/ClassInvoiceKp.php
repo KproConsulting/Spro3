@@ -458,6 +458,9 @@ class InvoiceKp extends Invoice {
         if( $nazione == null ){
             $nazione = "";
         }
+        else{
+            $nazione = $this->setNazione($nazione);
+        }
 
         //1.2 <CedentePrestatore> * <1.1>
         $CedentePrestatore = $domtree->createElement( "CedentePrestatore" );
@@ -664,9 +667,14 @@ class InvoiceKp extends Invoice {
 
         $partita_iva = $focus_account->column_fields["crmv_vat_registration_number"];
         $partita_iva = html_entity_decode(strip_tags($partita_iva), ENT_QUOTES, $default_charset);
+        if( $partita_iva == null ){
+            $partita_iva = "";
+        }
+        $partita_iva = trim($partita_iva);
 
         $codice_fiscale = $focus_account->column_fields["crmv_social_security_number"];
         $codice_fiscale = html_entity_decode(strip_tags($codice_fiscale), ENT_QUOTES, $default_charset);
+        $codice_fiscale = trim($codice_fiscale);
 
         $accountname = $focus_account->column_fields["accountname"];
         $accountname = html_entity_decode(strip_tags($accountname), ENT_QUOTES, $default_charset);
@@ -682,6 +690,12 @@ class InvoiceKp extends Invoice {
 
         $nazione = $focus_account->column_fields["bill_country"];
         $nazione = html_entity_decode(strip_tags($nazione), ENT_QUOTES, $default_charset);
+        if( $nazione == null ){
+            $nazione = "";
+        }
+        else{
+            $nazione = $this->setNazione($nazione);
+        }
 
         $cap = $focus_account->column_fields["bill_code"];
         $cap = html_entity_decode(strip_tags($cap), ENT_QUOTES, $default_charset);
@@ -693,18 +707,23 @@ class InvoiceKp extends Invoice {
             $DatiAnagrafici = $domtree->createElement( "DatiAnagrafici" );
             $DatiAnagrafici = $CessionarioCommittente->appendChild( $DatiAnagrafici );
 
-                //1.4.1.1 <IdFiscaleIVA> * <1.1>
-                $IdFiscaleIVA = $domtree->createElement( "IdFiscaleIVA" );
-                $IdFiscaleIVA = $DatiAnagrafici->appendChild( $IdFiscaleIVA );
+                if( $partita_iva != "" ){
+                    //Per i privati la partita iva va lasciata vuota e quindi il blocco 1.4.1.1 <IdFiscaleIVA> va omesso
 
-                    //1.4.1.1.1 <IdPaese> * <1.1>
-                    $IdFiscaleIVA->appendChild($domtree->createElement( 'IdPaese', $codice_nazione ) );
-                    
-                    //1.4.1.1.2 <IdCodice> * <1.1>
-                    $IdFiscaleIVA->appendChild($domtree->createElement( 'IdCodice', $partita_iva ) );
+                    //1.4.1.1 <IdFiscaleIVA> * <1.1>
+                    $IdFiscaleIVA = $domtree->createElement( "IdFiscaleIVA" );
+                    $IdFiscaleIVA = $DatiAnagrafici->appendChild( $IdFiscaleIVA );
+
+                        //1.4.1.1.1 <IdPaese> * <1.1>
+                        $IdFiscaleIVA->appendChild($domtree->createElement( 'IdPaese', $codice_nazione ) );
+                        
+                        //1.4.1.1.2 <IdCodice> * <1.1>
+                        $IdFiscaleIVA->appendChild($domtree->createElement( 'IdCodice', $partita_iva ) );
+
+                }
 
                 //1.4.1.2 <CodiceFiscale> <0.1>
-                if( trim($codice_fiscale) != "" ){
+                if( $codice_fiscale != "" ){
                     $DatiAnagrafici->appendChild($domtree->createElement( 'CodiceFiscale', $codice_fiscale ) );
                 }
 
@@ -741,7 +760,7 @@ class InvoiceKp extends Invoice {
                 $Sede->appendChild($domtree->createElement( 'CAP', $cap ) );
 
                 //1.4.2.4 <Comune> * <1.1>
-                $Sede->appendChild($domtree->createElement( 'Comune', $nazione ) );
+                $Sede->appendChild($domtree->createElement( 'Comune', $citta ) );
 
                 //1.4.2.5 <Provincia> <0.1>
                 $Sede->appendChild($domtree->createElement( 'Provincia', $provincia ) );
@@ -1172,9 +1191,11 @@ class InvoiceKp extends Invoice {
 
         $hdnGrandTotal = $focus_fattura->column_fields["hdnGrandTotal"];
         $hdnGrandTotal = html_entity_decode(strip_tags($hdnGrandTotal), ENT_QUOTES, $default_charset);
+        $hdnGrandTotal = number_format($hdnGrandTotal, 2, ".", "");
 
         $txtAdjustment = $focus_fattura->column_fields["txtAdjustment"];
         $txtAdjustment = html_entity_decode(strip_tags($txtAdjustment), ENT_QUOTES, $default_charset);
+        $txtAdjustment = number_format($txtAdjustment, 2, ".", "");
 
         //2.1.1 <DatiGeneraliDocumento> * <1.1>
         $DatiGeneraliDocumento = $domtree->createElement( "DatiGeneraliDocumento" );
@@ -1998,9 +2019,11 @@ class InvoiceKp extends Invoice {
 
             $quantity = $adb->query_result($result_query, $i, 'quantity');
             $quantity = html_entity_decode(strip_tags($quantity), ENT_QUOTES, $default_charset);
+            $quantity = number_format($quantity, 2, ".", "");
 
             $listprice = $adb->query_result($result_query, $i, 'listprice');
             $listprice = html_entity_decode(strip_tags($listprice), ENT_QUOTES, $default_charset);
+            $listprice = number_format($listprice, 2, ".", "");
 
             $discount_percent = $adb->query_result($result_query, $i, 'discount_percent');
             $discount_percent = html_entity_decode(strip_tags($discount_percent), ENT_QUOTES, $default_charset);
@@ -2016,6 +2039,7 @@ class InvoiceKp extends Invoice {
 
             $total_notaxes = $adb->query_result($result_query, $i, 'total_notaxes');
             $total_notaxes = html_entity_decode(strip_tags($total_notaxes), ENT_QUOTES, $default_charset);
+            $total_notaxes = number_format($total_notaxes, 2, ".", "");
 
             $comment = $adb->query_result($result_query, $i, 'comment');
             $comment = html_entity_decode(strip_tags($comment), ENT_QUOTES, $default_charset);
@@ -2028,9 +2052,11 @@ class InvoiceKp extends Invoice {
 
             $linetotal = $adb->query_result($result_query, $i, 'linetotal');
             $linetotal = html_entity_decode(strip_tags($linetotal), ENT_QUOTES, $default_charset);
+            $linetotal = number_format($linetotal, 2, ".", "");
 
             $tax_total = $adb->query_result($result_query, $i, 'tax_total');
             $tax_total = html_entity_decode(strip_tags($tax_total), ENT_QUOTES, $default_charset);
+            $tax_total = number_format($tax_total, 2, ".", "");
 
             $tax1 = $adb->query_result($result_query, $i, 'tax1');
             $tax1 = html_entity_decode(strip_tags($tax1), ENT_QUOTES, $default_charset);
@@ -2198,6 +2224,7 @@ class InvoiceKp extends Invoice {
             if( $total_notaxes == null || $total_notaxes == 0 ){
                 $total_notaxes = 0;
             }
+            $total_notaxes = number_format($total_notaxes, 2, ".", "");
 
             $tax1 = $adb->query_result($result_query, $i, 'tax1');
             $tax1 = html_entity_decode(strip_tags($tax1), ENT_QUOTES, $default_charset);
@@ -2210,12 +2237,14 @@ class InvoiceKp extends Invoice {
             if( $tax_total == null || $tax_total == '' ){
                 $tax_total = 0;
             }
+            $tax_total = number_format($tax_total, 2, ".", "");
 
             $linetotal = $adb->query_result($result_query, $i, 'linetotal');
             $linetotal = html_entity_decode(strip_tags($linetotal), ENT_QUOTES, $default_charset);
             if( $linetotal == null || $linetotal == '' ){
                 $linetotal = 0;
             }
+            $linetotal = number_format($linetotal, 2, ".", "");
 
             $id_tassa = $adb->query_result($result_query, $i, 'id_tassa');
             $id_tassa = html_entity_decode(strip_tags($id_tassa), ENT_QUOTES, $default_charset);
@@ -2810,6 +2839,7 @@ class InvoiceKp extends Invoice {
                     acc.kp_codice_nazione codice_nazione,
                     acc.kp_codice_id_fe codice_identificativo,
                     acc.crmv_vat_registration_number partita_iva,
+                    acc.crmv_social_security_number codice_fiscale,
                     billadd.bill_city citta,
                     billadd.bill_code cap,
                     billadd.bill_country nazione,
@@ -2828,7 +2858,7 @@ class InvoiceKp extends Invoice {
             $accountname = $adb->query_result($result_query, 0, 'accountname');
             $accountname = html_entity_decode(strip_tags($accountname), ENT_QUOTES,$default_charset);
             $accountname = trim($accountname);
-            if( $accountname != null && $accountname != "" && $accountname !== 0 ){
+            if( $accountname != null && $accountname != "" ){
                 $accountname_check = 1;
             }
             else{
@@ -2839,7 +2869,7 @@ class InvoiceKp extends Invoice {
             $formato_trasmissione = $adb->query_result($result_query, 0, 'formato_trasmissione');
             $formato_trasmissione = html_entity_decode(strip_tags($formato_trasmissione), ENT_QUOTES,$default_charset);
             $formato_trasmissione = trim($formato_trasmissione);
-            if( $formato_trasmissione != null && $formato_trasmissione != "" && $formato_trasmissione !== 0 ){
+            if( $formato_trasmissione != null && $formato_trasmissione != "" ){
                 $formato_trasmissione_check = 1;
             }
             else{
@@ -2850,7 +2880,7 @@ class InvoiceKp extends Invoice {
             $codice_nazione = $adb->query_result($result_query, 0, 'codice_nazione');
             $codice_nazione = html_entity_decode(strip_tags($codice_nazione), ENT_QUOTES,$default_charset);
             $codice_nazione = trim($codice_nazione);
-            if( $codice_nazione != null && $codice_nazione != "" && $codice_nazione !== 0 ){
+            if( $codice_nazione != null && $codice_nazione != "" ){
                 $codice_nazione_check = 1;
             }
             else{
@@ -2882,18 +2912,26 @@ class InvoiceKp extends Invoice {
             $partita_iva = $adb->query_result($result_query, 0, 'partita_iva');
             $partita_iva = html_entity_decode(strip_tags($partita_iva), ENT_QUOTES,$default_charset);
             $partita_iva = trim($partita_iva);
-            if( $partita_iva != null && $partita_iva != "" && $partita_iva !== 0 ){
+            if( $partita_iva != null && $partita_iva != ""){
                 $partita_iva_check = 1;
             }
             else{
-                $partita_iva_check = "Azienda priva di partita IVA.";
-                $check = 0;
+                $codice_fiscale = $adb->query_result($result_query, 0, 'codice_fiscale');
+                $codice_fiscale = html_entity_decode(strip_tags($codice_fiscale), ENT_QUOTES, $default_charset);
+                $codice_fiscale = trim($codice_fiscale);
+                if( $codice_fiscale != null && $codice_fiscale != ""){
+                    $partita_iva_check = 1;
+                }
+                else{
+                    $partita_iva_check = "Azienda priva di partita IVA e codice fiscale (per i privati è obbligatorio indicare almeno il codice fiscale).";
+                    $check = 0;
+                }
             }
 
             $citta = $adb->query_result($result_query, 0, 'citta');
             $citta = html_entity_decode(strip_tags($citta), ENT_QUOTES,$default_charset);
             $citta = trim($citta);
-            if( $citta != null && $citta != "" && $citta !== 0 ){
+            if( $citta != null && $citta != "" ){
                 $citta_check = 1;
             }
             else{
@@ -2904,7 +2942,7 @@ class InvoiceKp extends Invoice {
             $cap = $adb->query_result($result_query, 0, 'cap');
             $cap = html_entity_decode(strip_tags($cap), ENT_QUOTES,$default_charset);
             $cap = trim($cap);
-            if( $cap != null && $cap != "" && $cap !== 0 ){
+            if( $cap != null && $cap != "" ){
                 $cap_check = 1;
             }
             else{
@@ -2915,7 +2953,7 @@ class InvoiceKp extends Invoice {
             $nazione = $adb->query_result($result_query, 0, 'nazione');
             $nazione = html_entity_decode(strip_tags($nazione), ENT_QUOTES,$default_charset);
             $nazione = trim($nazione);
-            if( $nazione != null && $nazione != "" && $nazione !== 0 ){
+            if( $nazione != null && $nazione != "" ){
                 $nazione_check = 1;
             }
             else{
@@ -2926,7 +2964,7 @@ class InvoiceKp extends Invoice {
             $indirizzo = $adb->query_result($result_query, 0, 'indirizzo');
             $indirizzo = html_entity_decode(strip_tags($indirizzo), ENT_QUOTES,$default_charset);
             $naziindirizzoone = trim($indirizzo);
-            if( $indirizzo != null && $indirizzo != "" && $indirizzo !== 0 ){
+            if( $indirizzo != null && $indirizzo != "" ){
                 $indirizzo_check = 1;
             }
             else{
@@ -3517,6 +3555,19 @@ class InvoiceKp extends Invoice {
         $html .= "</table>";
 
         return $html;
+
+    }
+
+    function setNazione($nazione){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $result = trim($nazione);
+
+        if( strtoupper($nazione) == "ITALIA" || strtoupper($nazione) == "ITALY" ){
+            $result = "IT";
+        }
+
+        return $result;
 
     }
 
