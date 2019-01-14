@@ -303,11 +303,21 @@
 			<td align="right">
 				<div class="dvtCellInfo">
 					<!-- kpro@tom101220181102 --> 
-					<input type="hidden" readonly name="kpTaxName{$row_no}" id="kpTaxName{$row_no}" value="{$data.$taxName}">
-					<input type="text" readonly name="kpTaxLabel{$row_no}" id="kpTaxLabel{$row_no}" value="{$data.$taxLabel}">
-					<span id="taxTotal{$row_no}" style="padding:3px 0;">{$data.$taxTotal|formatUserNumber}</span>
+
+					<table>
+						<tr>
+							<td style="text-align: left;">
+								<input type="hidden" readonly name="kpTaxName{$row_no}" id="kpTaxName{$row_no}" value="{$data.$taxName}">
+								<input type="text" readonly name="kpTaxLabel{$row_no}" id="kpTaxLabel{$row_no}" value="{$data.$taxLabel}">
+							</td>
+							<td style="text-align: right;">
+								<span id="taxTotal{$row_no}" style="padding:3px 0;">{$data.$taxTotal|formatUserNumber}</span>
+							</td>
+						</tr>
+					</table>
+
 					<!--<div id="taxTotal{$row_no}" style="padding:3px 0;">{$data.$taxTotal|formatUserNumber}</div>-->
-					<!-- kpro@tom101220181102 end --> 
+					<!-- kpro@tom101220181102 end -->
 				</div>
 			</td>
 		   </tr>
