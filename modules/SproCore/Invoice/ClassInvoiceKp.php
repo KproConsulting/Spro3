@@ -211,7 +211,28 @@ class InvoiceKp extends Invoice {
     function salvaFatturaElettronica(DOMDocument $domtree, $id, $save_path){
         global $adb, $table_prefix, $current_user, $default_charset;
 
-        $file_name = date(YmdHis).'_'.$id.'.xml';
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false);
+
+        $business_unit = $focus_fattura->column_fields["kp_business_unit"];
+        $business_unit = html_entity_decode(strip_tags($business_unit), ENT_QUOTES, $default_charset);
+
+        $progressivo_invio = $focus_fattura->column_fields["kp_prog_inv_fe"];
+        $progressivo_invio = html_entity_decode(strip_tags($progressivo_invio), ENT_QUOTES, $default_charset);
+
+        $cliente = $focus_fattura->column_fields["account_id"];
+        $cliente = html_entity_decode(strip_tags($cliente), ENT_QUOTES, $default_charset);
+
+        $focus_bu = CRMEntity::getInstance('KpBusinessUnit');
+        $focus_bu->retrieve_entity_info($business_unit, "KpBusinessUnit", $dieOnError=false); 
+
+        $codice_trasmittente = $focus_bu->column_fields["kp_cod_fisc_trasm"];
+        $codice_trasmittente = html_entity_decode(strip_tags($codice_trasmittente), ENT_QUOTES, $default_charset);
+
+        $codice_nazione_trasmittente = $focus_bu->column_fields["kp_codice_naz_trasm"];
+        $codice_nazione_trasmittente = html_entity_decode(strip_tags($codice_nazione_trasmittente), ENT_QUOTES, $default_charset);
+
+        $file_name = $codice_nazione_trasmittente.$codice_trasmittente.'_'.$progressivo_invio.'.xml';
 
         $file_ouput_temp = $save_path.$file_name;
 
@@ -2030,12 +2051,14 @@ class InvoiceKp extends Invoice {
             if( $discount_percent == null || $discount_percent == 0 ){
                 $discount_percent = 0;
             }
+            $discount_percent = number_format($discount_percent, 2, ".", "");
 
             $discount_amount = $adb->query_result($result_query, $i, 'discount_amount');
             $discount_amount = html_entity_decode(strip_tags($discount_amount), ENT_QUOTES, $default_charset);
             if( $discount_amount == null || $discount_amount == 0 ){
                 $discount_amount = 0;
             }
+            $discount_amount = number_format($discount_amount, 2, ".", "");
 
             $total_notaxes = $adb->query_result($result_query, $i, 'total_notaxes');
             $total_notaxes = html_entity_decode(strip_tags($total_notaxes), ENT_QUOTES, $default_charset);
@@ -2133,7 +2156,6 @@ class InvoiceKp extends Invoice {
             if( $percentage == "" ){
                 $percentage = 0;
             }
-
             $percentage = number_format($percentage, 2, ".", "");
 
             $natura = $adb->query_result($result_query, $i, 'natura');
@@ -2368,6 +2390,10 @@ class InvoiceKp extends Invoice {
 
             $length_sequence = strlen($start_sequence);			
             $start_sequence = (int)$start_sequence;
+
+            if( $start_sequence == 9999 ){
+                $start_sequence = 1;
+            }
 
             $start_sequence++;
             $start_sequence = str_pad($start_sequence, $length_sequence, "0", STR_PAD_LEFT);
@@ -3318,7 +3344,7 @@ class InvoiceKp extends Invoice {
             }
 
             $dati_numeratore = $this->checkCorrettezzaProgressivoInvioFatturaElettronica($business_unit);
-            if( $dati_numeratore["esiste"] && $dati_numeratore["lunghezza_numeratore"] >= 1 && $dati_numeratore["lunghezza_numeratore"] <= 10 ){
+            if( $dati_numeratore["esiste"] && $dati_numeratore["lunghezza_numeratore"] >= 1 && $dati_numeratore["lunghezza_numeratore"] <= 5 ){
                 $numeratore_check = 1;
             }
             elseif( !$dati_numeratore["esiste"] ){
@@ -3329,8 +3355,8 @@ class InvoiceKp extends Invoice {
                 $numeratore_check = "Progressivo invio fatture elettroniche troppo corto.";
                 $check = 0;
             }
-            elseif( $dati_numeratore["lunghezza_numeratore"] > 10){
-                $numeratore_check = "Progressivo invio fatture elettroniche troppo lungo.";
+            elseif( $dati_numeratore["lunghezza_numeratore"] > 5){
+                $numeratore_check = "Progressivo invio fatture elettroniche troppo lungo (lunghezza massima 5).";
                 $check = 0;
             }
             else{
