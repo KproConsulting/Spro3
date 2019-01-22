@@ -101,7 +101,7 @@ class InvoiceKp extends Invoice {
 
             //printf("\n".$id);
 
-            $check_xml = $this->checkEsisteDocumentoFatturaProforma($id);
+            $check_xml = $this->checkEsisteDocumentoFatturaElettronica($id);
 
             if( !$check_xml["esiste"] && !in_array($id, $fatture_elaborate) ){
 
@@ -343,12 +343,13 @@ class InvoiceKp extends Invoice {
         $codice_identificativo_cliente = $focus_cliente->column_fields["kp_codice_id_fe"];
         $codice_identificativo_cliente = html_entity_decode(strip_tags($codice_identificativo_cliente), ENT_QUOTES, $default_charset);
         $codice_identificativo_cliente = trim($codice_identificativo_cliente);
-        if( $codice_identificativo_cliente == null ){
+        if( $codice_identificativo_cliente == null || $codice_identificativo_cliente == '0000000' ){
             $codice_identificativo_cliente = "";
         }
 
         $pec_cliente = $focus_cliente->column_fields["kp_pec"];
         $pec_cliente = html_entity_decode(strip_tags($pec_cliente), ENT_QUOTES, $default_charset);
+        $pec_cliente = trim($pec_cliente);
         if( $pec_cliente == null ){
             $pec_cliente = "";
         }
@@ -396,7 +397,7 @@ class InvoiceKp extends Invoice {
                 //1.1.5.2 <Email> <0.1>
                 $ContattiTrasmittente->appendChild( $domtree->createElement( 'Email', '' ) );*/
 
-            if( $codice_identificativo_cliente == "" && $pec_cliente != 0 ){
+            if( $codice_identificativo_cliente == "" && $pec_cliente != "" ){
                 //1.1.6 <PECDestinatario> <0.1>
                 $DatiTrasmissione->appendChild( $domtree->createElement( 'PECDestinatario', $pec_cliente ) );
             }
@@ -2628,7 +2629,7 @@ class InvoiceKp extends Invoice {
                 $check = 0;
             }
 
-            $check_xml = $this->checkEsisteDocumentoFatturaProforma($fattura);
+            $check_xml = $this->checkEsisteDocumentoFatturaElettronica($fattura);
             
             if( $check_xml["esiste"] ){
                 $esistenza_xml_check = "Esiste già un documento XML generato per questa fattura.";
@@ -2840,7 +2841,7 @@ class InvoiceKp extends Invoice {
 
     }
 
-    function checkEsisteDocumentoFatturaProforma($fattura){
+    function checkEsisteDocumentoFatturaElettronica($fattura){
         global $adb, $table_prefix, $current_user, $default_charset;
 
         $result = "";
