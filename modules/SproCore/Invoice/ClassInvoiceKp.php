@@ -1969,6 +1969,14 @@ class InvoiceKp extends Invoice {
     function getBodyFatturaElettronica(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false);
+
+        $tipo_documento = $focus_fattura->column_fields["kp_tipo_documento"];
+        $tipo_documento = html_entity_decode(strip_tags($tipo_documento), ENT_QUOTES, $default_charset);
+
+        $lista_scadenze = $this->getScadenzeFattura($id);
+
         $xmlRoot = $domtree->getElementsByTagName( "p:FatturaElettronica" );
 
         if( $xmlRoot->length > 0 ){
@@ -1988,8 +1996,10 @@ class InvoiceKp extends Invoice {
                 //2.3 <DatiVeicoli> <0.1>
                 //$FatturaElettronicaBody->appendChild( $this->getDatiVeicoli($domtree, $id) );
 
-                //2.4 <DatiPagamento> <0.N>
-                $FatturaElettronicaBody->appendChild( $this->getDatiPagamento($domtree, $id) );
+                if( $tipo_documento != "Nota di credito" && count($lista_scadenze) > 0 ){
+                    //2.4 <DatiPagamento> <0.N>
+                    $FatturaElettronicaBody->appendChild( $this->getDatiPagamento($domtree, $id) );
+                }
 
                 //2.5 <Allegati> <0.N>
                 //$FatturaElettronicaBody->appendChild( $this->getAllegati($domtree, $id) );
