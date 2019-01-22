@@ -1216,6 +1216,9 @@ class InvoiceKp extends Invoice {
 
         $txtAdjustment = $focus_fattura->column_fields["txtAdjustment"];
         $txtAdjustment = html_entity_decode(strip_tags($txtAdjustment), ENT_QUOTES, $default_charset);
+        if( $txtAdjustment == null || $txtAdjustment == "" ){
+            $txtAdjustment = 0;
+        }
         $txtAdjustment = number_format($txtAdjustment, 2, ".", "");
 
         //2.1.1 <DatiGeneraliDocumento> * <1.1>
@@ -1248,8 +1251,10 @@ class InvoiceKp extends Invoice {
             //2.1.1.9 <ImportoTotaleDocumento> <0.1>
             $DatiGeneraliDocumento->appendChild($domtree->createElement( 'ImportoTotaleDocumento', $hdnGrandTotal ) );
 
-            //2.1.1.10 <Arrotondamento> <0.1>
-            $DatiGeneraliDocumento->appendChild($domtree->createElement( 'Arrotondamento', $txtAdjustment ) );
+            if( $txtAdjustment != null && $txtAdjustment != "" && $txtAdjustment != 0  && $txtAdjustment != 0.00 ){
+                //2.1.1.10 <Arrotondamento> <0.1>
+                $DatiGeneraliDocumento->appendChild($domtree->createElement( 'Arrotondamento', $txtAdjustment ) );
+            }
 
             //2.1.1.11 <Causale> <0.N>
             //$DatiGeneraliDocumento->appendChild($domtree->createElement( 'Causale', '' ) );
