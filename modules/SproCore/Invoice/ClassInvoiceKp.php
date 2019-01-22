@@ -2629,6 +2629,7 @@ class InvoiceKp extends Invoice {
             }
 
             $check_righe_prive_di_iva = $this->getRigheTassazioneNonCoerente($fattura);
+            //print_r($check_righe_prive_di_iva);die;
             if( $check_righe_prive_di_iva["esiste"] ){
                 $check = 0;
                 $tasse_righe_check = "Sono presenti righe con tassazione non coerente";
@@ -2804,9 +2805,20 @@ class InvoiceKp extends Invoice {
                 $esiste = true;
                 $array_righe[] = $sequence_no;
             }
-            elseif( ( intval($percentage) * $total_notaxes ) / 100 != $tax_total ){
-                $esiste = true;
-                $array_righe[] = $sequence_no;
+            else{
+
+                $tassa_calcolata = ( intval($percentage) * $total_notaxes ) / 100;
+                $tassa_calcolata_arrotondata = round($tassa_calcolata, 2);
+
+                $tassa_totale_arrotondata = round($tax_total, 2);
+
+                if( $tassa_calcolata_arrotondata != $tassa_totale_arrotondata ){
+
+                    $esiste = true;
+                    $array_righe[] = $sequence_no;
+
+                }
+
             }
 
         }
