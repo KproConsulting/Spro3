@@ -200,6 +200,10 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
                 acc.kp_ritenuta_acconto kp_ritenuta_acconto,
                 acc.kp_spese_riba kp_spese_riba,
                 acc.kp_tasse kp_tasse,
+                acc.kp_applica_ritenuta applica_ritenuta,
+                acc.kp_tipo_ritenuta tipo_ritenuta,
+                acc.kp_causale_pag_rite causale_pag_rite,
+                acc.kp_aliquota_ritenuta aliquota_ritenuta,
                 billad.bill_city bill_city,
                 billad.bill_code bill_code,
                 billad.bill_country bill_country,
@@ -214,7 +218,10 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
                 INNER JOIN {$table_prefix}_accountbillads billad ON billad.accountaddressid = acc.accountid
                 INNER JOIN {$table_prefix}_accountshipads shipad ON shipad.accountaddressid = acc.accountid
                 INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = acc.accountid
-                WHERE ent.deleted = 0 AND acc.accountid=".$cliente_fatt;
+                WHERE ent.deleted = 0 AND acc.accountid = ".$cliente_fatt; //kpro@tom240120191400
+
+        //print_r($q_cliente);die;        
+
         $res_cliente = $adb->query($q_cliente);
 
         if($adb->num_rows($res_cliente)>0){
@@ -297,6 +304,35 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
             $ship_street = $adb->query_result($res_cliente,0,'ship_street');
             $ship_street = html_entity_decode(strip_tags($ship_street), ENT_QUOTES,$default_charset);
 
+            /* kpro@tom240120191400 */
+            $applica_ritenuta = $adb->query_result($res_cliente, 0, 'applica_ritenuta');
+            $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
+            if($applica_ritenuta == "1" || $applica_ritenuta == 1 ){
+                $applica_ritenuta = true;
+            }
+            else{
+                $applica_ritenuta = false;
+            }
+
+            $tipo_ritenuta = $adb->query_result($res_cliente, 0, 'tipo_ritenuta');
+            $tipo_ritenuta = html_entity_decode(strip_tags($tipo_ritenuta), ENT_QUOTES, $default_charset);
+            if($tipo_ritenuta == null || $tipo_ritenuta == ""){
+                $tipo_ritenuta = '';
+            }
+
+            $causale_pag_rite = $adb->query_result($res_cliente, 0, 'causale_pag_rite');
+            $causale_pag_rite = html_entity_decode(strip_tags($causale_pag_rite), ENT_QUOTES, $default_charset);
+            if($causale_pag_rite == null || $causale_pag_rite == ""){
+                $causale_pag_rite = '';
+            }
+
+            $aliquota_ritenuta = $adb->query_result($res_cliente, 0, 'aliquota_ritenuta');
+            $aliquota_ritenuta = html_entity_decode(strip_tags($aliquota_ritenuta), ENT_QUOTES, $default_charset);
+            if($aliquota_ritenuta == null || $aliquota_ritenuta == ""){
+                $aliquota_ritenuta = 0;
+            }
+            /* kpro@tom240120191400 end */
+
         }
         else{
             $split_payment = '0';
@@ -313,6 +349,10 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
             $ship_country = "";
             $ship_state = "";
             $ship_street = "";
+            $applica_ritenuta = "0"; //kpro@tom240120191400
+            $tipo_ritenuta = ""; //kpro@tom240120191400
+            $causale_pag_rite = ""; //kpro@tom240120191400
+            $aliquota_ritenuta = ""; //kpro@tom240120191400
         }
         //se il contatto dell'odf è vuoto, prendo il contatto dell'azienda con Riferimento Fatturazione = si
         if($contatto == 0){
@@ -525,6 +565,15 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
                 $invoice->column_fields['kp_split_payment'] = '1';
             }
 
+            /* kpro@tom240120191400 */
+            if( $applica_ritenuta ){
+                $invoice->column_fields['kp_applica_ritenuta'] = '1';
+                $invoice->column_fields['kp_tipo_ritenuta'] = $tipo_ritenuta;
+                $invoice->column_fields['kp_causale_pag_rite'] = $causale_pag_rite;
+                $invoice->column_fields['kp_aliquota_ritenuta'] = $aliquota_ritenuta;
+            }
+            /* kpro@tom240120191400 end */
+
             $invoice->save('Invoice', $longdesc=true, $offline_update=false, $triggerEvent=false); 
 
             $invoiceid = $invoice->id;
@@ -691,6 +740,12 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
         }
 		
     }	
+
+    /* kpro@tom240120191400 */
+    $focus_invoice = CRMEntity::getInstance('Invoice'); 
+    $focus_invoice->retrieve_entity_info($invoiceid, "Invoice");
+    $focus_invoice->setRitenuta();
+    /* kpro@tom240120191400 end */
 
     return $risultato;
 	
