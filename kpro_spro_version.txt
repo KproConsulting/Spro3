@@ -130,4 +130,9 @@ S-PRO 3.0
 - 05/10/2018 kpro@bid051020181500 Spostamento di alcune schermate custom dei tab in list view a livello di classe del modulo
 - 17/10/2018 kpro@bid171020181220 Aggiunta possibilità di calcolare il fatturato nelle commesse dalle fatture o dagli OdF
 - 23/11/2018 kpro@bid231120181100 Aggiunta funzione per riportare alcuni campi dal corso di formazione durante la creazione di un giorno di formazione
-- 04/01/2019 kpro@bid040120191730 Correzione limitazione sul numero dei servizi da esportare nel excel di dettaglio e impostato a valuta la tipologia delle celle contenenti il fatturato
+- 20/12/2018 kpro@tom201220181609 Serve ad evitare che un corso sia indicato come aggiornamento di se stesso creando un loop
+- 23/01/2019 kpro@tom230120190909 Correzione bug che portava l'opportunità a perdere l'agente
+- 24/01/2019 kpro@tom240120191400 Aggiunta gestione ritenuta d'acconto
+
+S-PRO 4.0
+
