@@ -86,7 +86,164 @@ class InvoiceKp extends Invoice {
 
         }
 
+        $this->setRitenuta(); //kpro@tom240120191400
+
     }
+
+    /* kpro@tom240120191400 */
+    function setRitenuta(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $this->setImponibileFattura();
+        $this->setTotaleFattura();
+
+        $applica_ritenuta = $this->column_fields["kp_applica_ritenuta"];
+        $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
+        if( $applica_ritenuta == 'on' || $applica_ritenuta == '1' ){
+            $applica_ritenuta = true;
+        }
+        else{
+            $applica_ritenuta = false;
+        }
+
+        $aliquota_ritenuta = $this->column_fields["kp_aliquota_ritenuta"];
+        $aliquota_ritenuta = html_entity_decode(strip_tags($aliquota_ritenuta), ENT_QUOTES, $default_charset);
+        if( $aliquota_ritenuta == null || $aliquota_ritenuta == '' ){
+            $aliquota_ritenuta = 0;
+        }
+
+        $total_fattura = $this->getTotaleFattura();
+        if( $applica_ritenuta && $aliquota_ritenuta != 0 ){
+            $importo_ritenuta = $total_fattura * $aliquota_ritenuta / 100;
+            $totale_da_pagare = $total_fattura - $importo_ritenuta;
+        }
+        else{
+            $importo_ritenuta = 0;
+            $totale_da_pagare = $total_fattura;
+        }
+
+        $update = "UPDATE {$table_prefix}_invoice SET
+                    kp_importo_ritenuta = ".$importo_ritenuta.",
+                    kp_tot_da_pagare = ".$totale_da_pagare."
+                    WHERE invoiceid = ".$this->id;
+
+        $adb->query($update);
+
+    }
+
+    function setImponibileFattura(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_imponibile = $this->getImponibileFattura();
+
+        $update = "UPDATE {$table_prefix}_invoice SET
+                    kp_tot_imponibile = ".$total_imponibile."
+                    WHERE invoiceid = ".$this->id;
+        
+        $adb->query($update);
+
+    }
+
+    function getImponibileFattura($where = "tax.percentage > 0"){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_imponibile = 0;
+
+        $query = "SELECT 
+                    COALESCE(SUM(rel.total_notaxes), 0) total_imponibile
+                    FROM {$table_prefix}_inventoryproductrel rel
+                    INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = rel.productid
+                    INNER JOIN kp_inventoryproductrel kprel ON kprel.lineitem_id = rel.lineitem_id AND kprel.id = rel.id
+                    INNER JOIN {$table_prefix}_inventorytaxinfo tax ON tax.taxname = kprel.id_tassa
+                    WHERE rel.id = ".$this->id;
+        
+        if( $where != "" ){
+            $query .= " AND ".$where;
+        }
+
+        //file_put_contents( __DIR__."/kp_log.txt", $query );
+
+        $result_query = $adb->query($query);
+        $num_result = $adb->num_rows($result_query);
+
+        if( $num_result > 0 ){
+
+            $total_imponibile = $adb->query_result($result_query, 0, 'total_imponibile');
+            $total_imponibile = html_entity_decode(strip_tags($total_imponibile), ENT_QUOTES, $default_charset);
+
+        }
+
+        return $total_imponibile;
+
+    }
+
+    function setTotaleFattura(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_fattura = $this->getTotaleFattura();
+
+        $update = "UPDATE {$table_prefix}_invoice SET
+                    kp_tot_fattura = ".$total_fattura.",
+                    kp_tot_da_pagare = ".$total_fattura."
+                    WHERE invoiceid = ".$this->id;
+
+        $adb->query($update);
+
+    }
+
+    function getTotaleFattura(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_fattura = 0;
+
+        $total_fattura = $this->column_fields["hdnGrandTotal"];
+        $total_fattura = html_entity_decode(strip_tags($total_fattura), ENT_QUOTES, $default_charset);
+
+        $split_payment = $this->column_fields["kp_split_payment"];
+        $split_payment = html_entity_decode(strip_tags($split_payment), ENT_QUOTES, $default_charset);
+        if( $split_payment == 'on' || $split_payment == '1' ){
+
+            $total_tasse = $this->getTotaleTasseFattura();
+            $total_fattura = $total_fattura - $total_tasse;
+
+        }
+
+        return $total_fattura;
+
+    }
+
+    function getTotaleTasseFattura($where = "tax.percentage > 0"){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_tasse = 0;
+
+        $query = "SELECT 
+                    COALESCE(SUM(rel.tax_total), 0) total_tasse
+                    FROM {$table_prefix}_inventoryproductrel rel
+                    INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = rel.productid
+                    INNER JOIN kp_inventoryproductrel kprel ON kprel.lineitem_id = rel.lineitem_id AND kprel.id = rel.id
+                    INNER JOIN {$table_prefix}_inventorytaxinfo tax ON tax.taxname = kprel.id_tassa
+                    WHERE rel.id = ".$this->id;
+        
+        if( $where != "" ){
+            $query .= " AND ".$where;
+        }
+
+        $result_query = $adb->query($query);
+        $num_result = $adb->num_rows($result_query);
+
+        if( $num_result > 0 ){
+
+            $total_tasse = $adb->query_result($result_query, 0, 'total_tasse');
+            $total_tasse = html_entity_decode(strip_tags($total_tasse), ENT_QUOTES, $default_charset);
+
+        }
+
+        return $total_tasse;
+
+    }
+
+    /* kpro@tom240120191400 end */
 
     function getFattureElettroniche($array){
         global $adb, $table_prefix, $current_user, $default_charset;
@@ -137,7 +294,6 @@ class InvoiceKp extends Invoice {
             }
 
             $list_file = scandir($path_temp); 
-            print_r($list_file);
             foreach ($list_file as $file){
                 if( !in_array( $file, array(".","..") ) ){
                     @unlink($path_temp.$file);
@@ -150,14 +306,56 @@ class InvoiceKp extends Invoice {
 
     }
 
+    /* kpro@tom240120191400 */
+    function getListaFile($path){
+        global $adb, $table_prefix, $default_charset, $current_user, $root_directory;
+
+        $da_escludere = array(".", "..");
+
+        $lista_file = array();
+
+        if( is_dir($path) ){
+
+            foreach( scandir($path) as $file ) {
+
+                if( is_readable($path.$file) && is_file($path.$file) && !in_array($path.$file, $da_escludere) ){
+
+                    $lista_file[] = $file;
+
+                }
+
+            }
+
+        }
+
+        return $lista_file;
+
+    }
+
     function zipPath($nome_zip, $path){
         global $adb, $table_prefix, $default_charset, $current_user, $root_directory;
 
-        $command = "python3 ".__DIR__."/kpZipArchive.py ".$nome_zip." ".$path;  
+        /*$command = "python3 ".__DIR__."/kpZipArchive.py ".$nome_zip." ".$path;  
+        exec($command, $out, $status);*/
 
-        exec($command, $out, $status);
+        $zip = new ZipArchive();
+
+        if( $zip->open($path.$nome_zip, ZipArchive::CREATE|ZipArchive::OVERWRITE) !== TRUE ) {
+            exit("cannot open <$nome_zip>\n");
+        }
+
+        $lista_file = $this->getListaFile($path);
+        
+        foreach($lista_file as $file){
+
+            $zip->addFile($path.$file, $file);
+
+        }
+
+        $zip->close();  
 
     }
+    /* kpro@tom240120191400 end */
 
     function getFatturaElettronica($id, $save_path){
         global $adb, $table_prefix, $current_user, $default_charset;
@@ -888,20 +1086,43 @@ class InvoiceKp extends Invoice {
     function getDatiRitenuta(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false);
+
+        $tipo_ritenuta = $focus_fattura->column_fields["kp_tipo_ritenuta"];
+        $tipo_ritenuta = html_entity_decode(strip_tags($tipo_ritenuta), ENT_QUOTES, $default_charset);
+
+        $aliquota_ritenuta = $focus_fattura->column_fields["kp_aliquota_ritenuta"];
+        $aliquota_ritenuta = html_entity_decode(strip_tags($aliquota_ritenuta), ENT_QUOTES, $default_charset);
+        if( $aliquota_ritenuta == null || $aliquota_ritenuta == "" ){
+            $aliquota_ritenuta = 0;
+        }
+        $aliquota_ritenuta = number_format($aliquota_ritenuta, 2, ".", "");
+
+        $causale_pag_rite = $focus_fattura->column_fields["kp_causale_pag_rite"];
+        $causale_pag_rite = html_entity_decode(strip_tags($causale_pag_rite), ENT_QUOTES, $default_charset);
+
+        $importo_ritenuta = $focus_fattura->column_fields["kp_importo_ritenuta"];
+        $importo_ritenuta = html_entity_decode(strip_tags($importo_ritenuta), ENT_QUOTES, $default_charset);
+        if( $importo_ritenuta == null || $importo_ritenuta == "" ){
+            $importo_ritenuta = 0;
+        }
+        $importo_ritenuta = number_format($importo_ritenuta, 2, ".", "");
+
         //2.1.1.5 <DatiRitenuta> <0.1>
         $DatiRitenuta = $domtree->createElement( "DatiRitenuta" );
 
             //2.1.1.5.1 <TipoRitenuta> * <1.1>
-            $DatiRitenuta->appendChild($domtree->createElement( 'TipoRitenuta', '' ) );
+            $DatiRitenuta->appendChild($domtree->createElement( 'TipoRitenuta', $tipo_ritenuta ) );
 
             //2.1.1.5.2 <ImportoRitenuta> * <1.1>
-            $DatiRitenuta->appendChild($domtree->createElement( 'ImportoRitenuta', '' ) );
+            $DatiRitenuta->appendChild($domtree->createElement( 'ImportoRitenuta', $importo_ritenuta ) );
 
             //2.1.1.5.3 <AliquotaRitenuta> * <1.1>
-            $DatiRitenuta->appendChild($domtree->createElement( 'AliquotaRitenuta', '' ) );
+            $DatiRitenuta->appendChild($domtree->createElement( 'AliquotaRitenuta', $aliquota_ritenuta ) );
 
             //2.1.1.5.4 <CausalePagamento> * <1.1>
-            $DatiRitenuta->appendChild($domtree->createElement( 'CausalePagamento', '' ) );
+            $DatiRitenuta->appendChild($domtree->createElement( 'CausalePagamento', $causale_pag_rite ) );
 
         return $DatiRitenuta;
 
@@ -1223,6 +1444,23 @@ class InvoiceKp extends Invoice {
         }
         $txtAdjustment = number_format($txtAdjustment, 2, ".", "");
 
+        /* kpro@tom240120191400 */
+        $applica_ritenuta = $focus_fattura->column_fields["kp_applica_ritenuta"];
+        $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
+        if( $applica_ritenuta == 'on' || $applica_ritenuta == '1' ){
+            $applica_ritenuta = true;
+        }
+        else{
+            $applica_ritenuta = false;
+        }
+
+        $importo_ritenuta = $focus_fattura->column_fields["kp_importo_ritenuta"];
+        $importo_ritenuta = html_entity_decode(strip_tags($importo_ritenuta), ENT_QUOTES, $default_charset);
+        if( $importo_ritenuta == null || $importo_ritenuta == "" ){
+            $importo_ritenuta = 0;
+        }
+        /* kpro@tom240120191400 end */
+
         //2.1.1 <DatiGeneraliDocumento> * <1.1>
         $DatiGeneraliDocumento = $domtree->createElement( "DatiGeneraliDocumento" );
 
@@ -1238,8 +1476,12 @@ class InvoiceKp extends Invoice {
             //2.1.1.4 <Numero> * <1.1>
             $DatiGeneraliDocumento->appendChild($domtree->createElement( 'Numero', $invoice_number ) );
 
-            //2.1.1.5 <DatiRitenuta> <0.1>
-            //$DatiGeneraliDocumento->appendChild( $this->getDatiRitenuta($domtree, $id) );
+            /* kpro@tom240120191400 */
+            if( $applica_ritenuta && $importo_ritenuta != 0 ){
+                //2.1.1.5 <DatiRitenuta> <0.1>
+                $DatiGeneraliDocumento->appendChild( $this->getDatiRitenuta($domtree, $id) );
+            }
+            /* kpro@tom240120191400 end */
 
             //2.1.1.6 <DatiBollo> <0.1>
             //$DatiGeneraliDocumento->appendChild( $this->getDatiBollo($domtree, $id) );
@@ -1601,6 +1843,23 @@ class InvoiceKp extends Invoice {
         $focus_fattura = CRMEntity::getInstance('Invoice');
         $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false); 
 
+        /* kpro@tom240120191400 */
+        $applica_ritenuta = $focus_fattura->column_fields["kp_applica_ritenuta"];
+        $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
+        if( $applica_ritenuta == 'on' || $applica_ritenuta == '1' ){
+            $applica_ritenuta = true;
+        }
+        else{
+            $applica_ritenuta = false;
+        }
+
+        $importo_ritenuta = $focus_fattura->column_fields["kp_importo_ritenuta"];
+        $importo_ritenuta = html_entity_decode(strip_tags($importo_ritenuta), ENT_QUOTES, $default_charset);
+        if( $importo_ritenuta == null || $importo_ritenuta == "" ){
+            $importo_ritenuta = 0;
+        }
+        /* kpro@tom240120191400 end */
+
         //2.2.1 <DettaglioLinee> * <1.N>
         $DettaglioLinee = $domtree->createElement( "DettaglioLinee" );
 
@@ -1671,8 +1930,12 @@ class InvoiceKp extends Invoice {
             //2.2.1.12 <AliquotaIVA> * <1.1>
             $DettaglioLinee->appendChild($domtree->createElement( 'AliquotaIVA', $linea["percentage"] ) );
 
-            //2.2.1.13 <Ritenuta> <0.1>
-            //$DettaglioLinee->appendChild($domtree->createElement( 'Ritenuta', '' ) );
+            /* kpro@tom240120191400 */
+            if( $applica_ritenuta && $importo_ritenuta != 0 ){
+                //2.2.1.13 <Ritenuta> <0.1>
+                $DettaglioLinee->appendChild($domtree->createElement( 'Ritenuta', 'SI' ) );
+            }
+            /* kpro@tom240120191400 end */
 
             //2.2.1.14 <Natura> <0.1>
             if( $linea["percentage"] == 0.00 ){
@@ -2328,10 +2591,10 @@ class InvoiceKp extends Invoice {
             $totale_imposta = number_format($totale_imposta, 2, ".", "");
 
             $result[$id_tassa] = array("aliquota_iva" => $tax1,
-                                    "totale_imponibile" => $totale_imponibile,
-                                    "totale_imposta" => $totale_imposta,
-                                    "natura" => $natura,
-                                    "normativa" => $norma);
+                                        "totale_imponibile" => $totale_imponibile,
+                                        "totale_imposta" => $totale_imposta,
+                                        "natura" => $natura,
+                                        "normativa" => $norma);
 
         }
 
