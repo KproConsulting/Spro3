@@ -1217,6 +1217,7 @@ class InvoiceKp extends Invoice {
 
         $txtAdjustment = $focus_fattura->column_fields["txtAdjustment"];
         $txtAdjustment = html_entity_decode(strip_tags($txtAdjustment), ENT_QUOTES, $default_charset);
+        $txtAdjustment = trim($txtAdjustment);
         if( $txtAdjustment == null || $txtAdjustment == "" ){
             $txtAdjustment = 0;
         }
