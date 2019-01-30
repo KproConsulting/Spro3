@@ -2081,11 +2081,92 @@ class InvoiceKp extends Invoice {
 
     }
 
+    function esisteTabellaBanche(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $query = "SHOW TABLES LIKE 'kp_banche_company'";
+
+        $result_query = $adb->query($query);
+        $num_result = $adb->num_rows($result_query);
+
+        if( $num_result > 0 ){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+
+    function getDatiBancaPagamento($banca_pagamento){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $nome_istituto = "";
+        $iban = "";
+        $abi = "";
+        $cab = "";
+        $bic = "";
+
+        if( $this->esisteTabellaBanche() ){
+
+            $query = "SELECT 
+                        nome_istituto,
+                        iban,
+                        abi,
+                        cab,
+                        bic
+                        FROM kp_banche_company
+                        WHERE banca = '".$banca_pagamento."'";
+
+            $result_query = $adb->query($query);
+            $num_result = $adb->num_rows($result_query);
+
+            if( $num_result > 0 ){
+
+                $nome_istituto = $adb->query_result($result_query, 0, 'nome_istituto');
+                $nome_istituto = html_entity_decode(strip_tags($nome_istituto), ENT_QUOTES, $default_charset);
+                $nome_istituto = trim($nome_istituto);
+
+                $iban = $adb->query_result($result_query, 0, 'iban');
+                $iban = html_entity_decode(strip_tags($iban), ENT_QUOTES, $default_charset);
+                $iban = trim($iban);
+
+                $abi = $adb->query_result($result_query, 0, 'abi');
+                $abi = html_entity_decode(strip_tags($abi), ENT_QUOTES, $default_charset);
+                $abi = trim($abi);
+
+                $cab = $adb->query_result($result_query, 0, 'cab');
+                $cab = html_entity_decode(strip_tags($cab), ENT_QUOTES, $default_charset);
+                $cab = trim($cab);
+
+                $bic = $adb->query_result($result_query, 0, 'bic');
+                $bic = html_entity_decode(strip_tags($bic), ENT_QUOTES, $default_charset);
+                $bic = trim($bic);
+
+            }
+
+        }
+
+        $result = array("nome_istituto" => $nome_istituto,
+                        "iban" => $iban,
+                        "abi" => $abi,
+                        "cab" => $cab,
+                        "bic" => $bic);
+
+        return $result;
+
+    }
+
     function getDettaglioPagamento(DOMDocument $domtree, $id, $scadenza){
         global $adb, $table_prefix, $current_user, $default_charset;
 
         $focus_fattura = CRMEntity::getInstance('Invoice');
         $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false);
+        
+        $banca_pagamento = $focus_fattura->column_fields["banca_pagamento"];
+        $banca_pagamento = html_entity_decode(strip_tags($banca_pagamento), ENT_QUOTES, $default_charset);
+
+        $dati_banca_pagamento = $this->getDatiBancaPagamento($banca_pagamento);
 
         $focus_scadenziario = CRMEntity::getInstance('Scadenziario');
         $focus_scadenziario->retrieve_entity_info($scadenza, "Scadenziario", $dieOnError=false);
@@ -2145,24 +2226,34 @@ class InvoiceKp extends Invoice {
             $DettaglioPagamento->appendChild($domtree->createElement( 'CFQuietanzante', '' ) );
 
             //2.4.2.11 <TitoloQuietanzante> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'TitoloQuietanzante', '' ) );
+            $DettaglioPagamento->appendChild($domtree->createElement( 'TitoloQuietanzante', '' ) );*/
 
-            //2.4.2.12 <IstitutoFinanziario> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'IstitutoFinanziario', '' ) );
+            if( $dati_banca_pagamento["nome_istituto"] != "" ){
+                //2.4.2.12 <IstitutoFinanziario> <0.1>
+                $DettaglioPagamento->appendChild($domtree->createElement( 'IstitutoFinanziario', $dati_banca_pagamento["nome_istituto"] ) );
+            }
 
-            //2.4.2.13 <IBAN> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'IBAN', '' ) );
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["iban"] ){
+                //2.4.2.13 <IBAN> <0.1>
+                $DettaglioPagamento->appendChild($domtree->createElement( 'IBAN', $dati_banca_pagamento["iban"] ) );
+            }
 
-            //2.4.2.14 <ABI> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'ABI', '' ) );
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["abi"] ){
+                //2.4.2.14 <ABI> <0.1>
+                $DettaglioPagamento->appendChild($domtree->createElement( 'ABI', $dati_banca_pagamento["abi"] ) );
+            }
 
-            //2.4.2.15 <CAB> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'CAB', '' ) );
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["cab"] ){
+                //2.4.2.15 <CAB> <0.1>
+                $DettaglioPagamento->appendChild($domtree->createElement( 'CAB', $dati_banca_pagamento["cab"] ) );
+            }
 
-            //2.4.2.16 <BIC> <0.1>
-            $DettaglioPagamento->appendChild($domtree->createElement( 'BIC', '' ) );
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["bic"] ){
+                //2.4.2.16 <BIC> <0.1>
+                $DettaglioPagamento->appendChild($domtree->createElement( 'BIC', $dati_banca_pagamento["bic"] ) );
+            }
 
-            //2.4.2.17 <ScontoPagamentoAnticipato> <0.1>
+            /*//2.4.2.17 <ScontoPagamentoAnticipato> <0.1>
             $DettaglioPagamento->appendChild($domtree->createElement( 'ScontoPagamentoAnticipato', '' ) );
 
             //2.4.2.18 <DataLimitePagamentoAnticipato> <0.1>
