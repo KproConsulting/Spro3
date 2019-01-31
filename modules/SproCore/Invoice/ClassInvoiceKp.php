@@ -2440,6 +2440,7 @@ class InvoiceKp extends Invoice {
 
             $comment = $adb->query_result($result_query, $i, 'comment');
             $comment = html_entity_decode(strip_tags($comment), ENT_QUOTES, $default_charset);
+            $comment = $this->replaceSpecialChart($comment);
 
             $description = $adb->query_result($result_query, $i, 'description');
             $description = html_entity_decode(strip_tags($description), ENT_QUOTES, $default_charset);
@@ -2519,6 +2520,8 @@ class InvoiceKp extends Invoice {
                 $description = $nome_prodotto." - ".$description;
             }
 
+            $description = $this->replaceSpecialChart($description);
+
             $id_tassa = $adb->query_result($result_query, $i, 'id_tassa');
             $id_tassa = html_entity_decode(strip_tags($id_tassa), ENT_QUOTES, $default_charset);
 
@@ -2543,6 +2546,7 @@ class InvoiceKp extends Invoice {
             if( $norma == "" ){
                 $norma = "";
             }
+            $norma = $this->replaceSpecialChart($norma);
 
             $result[] = array("sequence_no" => $sequence_no,
                             "productid" => $productid,
@@ -3980,6 +3984,17 @@ class InvoiceKp extends Invoice {
         }
 
         return $result;
+
+    }
+
+    function replaceSpecialChart($stringa){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $stringa = trim($stringa);
+        $stringa = preg_replace('/\s+/', ' ', $stringa);
+        $stringa = str_replace('\n', " ", $stringa);
+
+        return $stringa;
 
     }
 
