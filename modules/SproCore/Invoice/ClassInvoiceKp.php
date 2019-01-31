@@ -97,6 +97,8 @@ class InvoiceKp extends Invoice {
         $this->setImponibileFattura();
         $this->setTotaleFattura();
 
+        $total_imponibile = $this->getImponibileFattura();
+
         $applica_ritenuta = $this->column_fields["kp_applica_ritenuta"];
         $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
         if( $applica_ritenuta == 'on' || $applica_ritenuta == '1' ){
@@ -113,8 +115,9 @@ class InvoiceKp extends Invoice {
         }
 
         $total_fattura = $this->getTotaleFattura();
+
         if( $applica_ritenuta && $aliquota_ritenuta != 0 ){
-            $importo_ritenuta = $total_fattura * $aliquota_ritenuta / 100;
+            $importo_ritenuta = $total_imponibile * $aliquota_ritenuta / 100;
             $totale_da_pagare = $total_fattura - $importo_ritenuta;
         }
         else{
@@ -1931,7 +1934,7 @@ class InvoiceKp extends Invoice {
             $DettaglioLinee->appendChild($domtree->createElement( 'AliquotaIVA', $linea["percentage"] ) );
 
             /* kpro@tom240120191400 */
-            if( $applica_ritenuta && $importo_ritenuta != 0 ){
+            if( $applica_ritenuta && $importo_ritenuta != 0 && $linea["percentage"] > 0 ){
                 //2.2.1.13 <Ritenuta> <0.1>
                 $DettaglioLinee->appendChild($domtree->createElement( 'Ritenuta', 'SI' ) );
             }
