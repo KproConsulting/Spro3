@@ -800,6 +800,8 @@ function AggiungiRigaFattura($dati_riga){
     $id_tassa = $dati_tassa["taxname"];
     $nome_tassa = $dati_tassa["taxlabel"];
     $tax = $dati_tassa["percentage"];
+
+    $totale_tasse = $total_notaxes * $tax / 100;    //kpro@tom010220191210
     
     if($debug){
         $log_content = "
@@ -817,7 +819,7 @@ POST-QUERY: subtotal = ".$subtotal.", total = ".$total.", adjustment = ".$adjust
             $adjustment = $adjustment + $prezzo_tot_tasse;
         }
         else{
-            $prezzo_tot_tasse = $total_notaxes + ($total_notaxes * $tax / 100);
+            $prezzo_tot_tasse = $total_notaxes + $totale_tasse; //kpro@tom010220191210
         }
 
         if(!$post_tasse){
@@ -871,19 +873,22 @@ PRE-INSERIMENTO: subtotal  ".$subtotal.", total = ".$total.", adjustment = ".$ad
         $description = addslashes($description);
 
         if($discount_percent > 0){
+            //kpro@tom010220191210
             $insert_riga_inv = "INSERT INTO {$table_prefix}_inventoryproductrel 
-                                (id, productid, relmodule, sequence_no, quantity, listprice, discount_percent, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal)
-                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$discount_percent.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.")";
+                                (id, productid, relmodule, sequence_no, quantity, listprice, discount_percent, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal, tax_total)
+                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$discount_percent.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.", ".$totale_tasse.")";
         }
         elseif($discount_amount > 0){
+            //kpro@tom010220191210
             $insert_riga_inv = "INSERT INTO {$table_prefix}_inventoryproductrel 
-                                (id, productid, relmodule, sequence_no, quantity, listprice, discount_amount, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal)
-                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$discount_amount.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.")";   
+                                (id, productid, relmodule, sequence_no, quantity, listprice, discount_amount, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal, tax_total)
+                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$discount_amount.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.", ".$totale_tasse.")";   
         }
         else{
+            //kpro@tom010220191210
             $insert_riga_inv = "INSERT INTO {$table_prefix}_inventoryproductrel 
-                                (id, productid, relmodule, sequence_no, quantity, listprice, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal)
-                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.")";
+                                (id, productid, relmodule, sequence_no, quantity, listprice, total_notaxes, comment, description, incrementondel, lineitem_id, linetotal, tax_total)
+                                VALUES (".$invoiceid.", ".$servizio.", 'Invoice', ".$sequence.", ".$qta_fatturata.", ".$prezzo_unitario.", ".$total_notaxes.", '".$commento_riga_fattura."', '".$description."', 0, ".$lineitem_id.", ".$prezzo_tot_tasse.", ".$totale_tasse.")";
         }
         
         $adb->query($insert_riga_inv);
