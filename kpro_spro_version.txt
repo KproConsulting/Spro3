@@ -133,6 +133,8 @@ S-PRO 3.0
 - 20/12/2018 kpro@tom201220181609 Serve ad evitare che un corso sia indicato come aggiornamento di se stesso creando un loop
 - 23/01/2019 kpro@tom230120190909 Correzione bug che portava l'opportunità a perdere l'agente
 - 24/01/2019 kpro@tom240120191400 Aggiunta gestione ritenuta d'acconto
+- 29/01/2019 kpro@tom290120190943 Gestione banca in fattura elettronica
+- 31/01/2019 kpro@tom310120191640 Gestione cassa previdenziale in fattura elettronica
 
 S-PRO 4.0
 
