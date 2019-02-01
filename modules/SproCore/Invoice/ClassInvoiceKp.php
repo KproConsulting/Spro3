@@ -645,6 +645,7 @@ class InvoiceKp extends Invoice {
         if( $ragione_sociale == null ){
             $ragione_sociale = "";
         }
+        $ragione_sociale = $this->replaceSpecialChart($ragione_sociale);
 
         $regime_fiscale = $focus_bu->column_fields["kp_regime_fiscale"];
         $regime_fiscale = html_entity_decode(strip_tags($regime_fiscale), ENT_QUOTES, $default_charset);
@@ -657,24 +658,28 @@ class InvoiceKp extends Invoice {
         if( $indirizzo == null ){
             $indirizzo = "";
         }
+        $indirizzo = $this->replaceSpecialChart($indirizzo);
 
         $cap = $focus_bu->column_fields["kp_cap"];
         $cap = html_entity_decode(strip_tags($cap), ENT_QUOTES, $default_charset);
         if( $cap == null ){
             $cap = "";
         }
+        $cap = $this->replaceSpecialChart($cap);
 
         $comune = $focus_bu->column_fields["kp_comune"];
         $comune = html_entity_decode(strip_tags($comune), ENT_QUOTES, $default_charset);
         if( $comune == null ){
             $comune = "";
         }
+        $comune = $this->replaceSpecialChart($comune);
 
         $provincia = $focus_bu->column_fields["kp_provincia"];
         $provincia = html_entity_decode(strip_tags($provincia), ENT_QUOTES, $default_charset);
         if( $provincia == null ){
             $provincia = "";
         }
+        $provincia = $this->replaceSpecialChart($provincia);
 
         $nazione = $focus_bu->column_fields["kp_nazione"];
         $nazione = html_entity_decode(strip_tags($nazione), ENT_QUOTES, $default_charset);
@@ -901,15 +906,19 @@ class InvoiceKp extends Invoice {
 
         $accountname = $focus_account->column_fields["accountname"];
         $accountname = html_entity_decode(strip_tags($accountname), ENT_QUOTES, $default_charset);
+        $accountname = $this->replaceSpecialChart($accountname);
 
         $indirizzo = $focus_account->column_fields["bill_street"];
         $indirizzo = html_entity_decode(strip_tags($indirizzo), ENT_QUOTES, $default_charset);
+        $indirizzo = $this->replaceSpecialChart($indirizzo);
 
         $citta = $focus_account->column_fields["bill_city"];
         $citta = html_entity_decode(strip_tags($citta), ENT_QUOTES, $default_charset);
+        $citta = $this->replaceSpecialChart($citta);
 
         $provincia = $focus_account->column_fields["bill_state"];
         $provincia = html_entity_decode(strip_tags($provincia), ENT_QUOTES, $default_charset);
+        $provincia = $this->replaceSpecialChart($provincia);
 
         $nazione = $focus_account->column_fields["bill_country"];
         $nazione = html_entity_decode(strip_tags($nazione), ENT_QUOTES, $default_charset);
@@ -922,6 +931,7 @@ class InvoiceKp extends Invoice {
 
         $cap = $focus_account->column_fields["bill_code"];
         $cap = html_entity_decode(strip_tags($cap), ENT_QUOTES, $default_charset);
+        $cap = $this->replaceSpecialChart($cap);
 
         //1.4 <CessionarioCommittente> <1.1>
         $CessionarioCommittente = $domtree->createElement( "CessionarioCommittente" );
@@ -1551,15 +1561,21 @@ class InvoiceKp extends Invoice {
 
             $rif_ord_cliente = $adb->query_result($result_query, $i, 'rif_ord_cliente');
             $rif_ord_cliente = html_entity_decode(strip_tags($rif_ord_cliente), ENT_QUOTES, $default_charset);
+            $rif_ord_cliente = $this->replaceSpecialChart($rif_ord_cliente);
 
             $data_ord_cliente = $adb->query_result($result_query, $i, 'data_ord_cliente');
             $data_ord_cliente = html_entity_decode(strip_tags($data_ord_cliente), ENT_QUOTES, $default_charset);
+            if( $data_ord_cliente == null || $data_ord_cliente == '0000-00-00' ){
+                $data_ord_cliente = "";
+            }
 
             $codice_cup = $adb->query_result($result_query, $i, 'codice_cup');
             $codice_cup = html_entity_decode(strip_tags($codice_cup), ENT_QUOTES, $default_charset);
+            $codice_cup = $this->replaceSpecialChart($codice_cup);
 
             $codice_cig = $adb->query_result($result_query, $i, 'codice_cig');
             $codice_cig = html_entity_decode(strip_tags($codice_cig), ENT_QUOTES, $default_charset);
+            $codice_cig = $this->replaceSpecialChart($codice_cig);
 
             $righe = array();
 
@@ -1620,15 +1636,21 @@ class InvoiceKp extends Invoice {
 
             $rif_ord_cliente = $adb->query_result($result_query, $i, 'rif_ord_cliente');
             $rif_ord_cliente = html_entity_decode(strip_tags($rif_ord_cliente), ENT_QUOTES, $default_charset);
+            $rif_ord_cliente = $this->replaceSpecialChart($rif_ord_cliente);
 
             $data_ord_cliente = $adb->query_result($result_query, $i, 'data_ord_cliente');
             $data_ord_cliente = html_entity_decode(strip_tags($data_ord_cliente), ENT_QUOTES, $default_charset);
+            if( $data_ord_cliente == null || $data_ord_cliente == '0000-00-00' ){
+                $data_ord_cliente = "";
+            }
 
             $codice_cup = $adb->query_result($result_query, $i, 'codice_cup');
             $codice_cup = html_entity_decode(strip_tags($codice_cup), ENT_QUOTES, $default_charset);
+            $codice_cup = $this->replaceSpecialChart($codice_cup);
 
             $codice_cig = $adb->query_result($result_query, $i, 'codice_cig');
             $codice_cig = html_entity_decode(strip_tags($codice_cig), ENT_QUOTES, $default_charset);
+            $codice_cig = $this->replaceSpecialChart($codice_cig);
 
             if( $rif_ord_cliente == "" ){
                 $rif_ord_cliente = $codice_cig;
@@ -1693,15 +1715,21 @@ class InvoiceKp extends Invoice {
 
             $rif_ord_cliente = $adb->query_result($result_query, $i, 'rif_ord_cliente');
             $rif_ord_cliente = html_entity_decode(strip_tags($rif_ord_cliente), ENT_QUOTES, $default_charset);
+            $rif_ord_cliente = $this->replaceSpecialChart($rif_ord_cliente);
 
             $data_ord_cliente = $adb->query_result($result_query, $i, 'data_ord_cliente');
             $data_ord_cliente = html_entity_decode(strip_tags($data_ord_cliente), ENT_QUOTES, $default_charset);
+            if( $data_ord_cliente == null || $data_ord_cliente == '0000-00-00' ){
+                $data_ord_cliente = "";
+            }
 
             $codice_cup = $adb->query_result($result_query, $i, 'codice_cup');
             $codice_cup = html_entity_decode(strip_tags($codice_cup), ENT_QUOTES, $default_charset);
+            $codice_cup = $this->replaceSpecialChart($codice_cup);
 
             $codice_cig = $adb->query_result($result_query, $i, 'codice_cig');
             $codice_cig = html_entity_decode(strip_tags($codice_cig), ENT_QUOTES, $default_charset);
+            $codice_cig = $this->replaceSpecialChart($codice_cig);
 
             if( $rif_ord_cliente == "" ){
                 $rif_ord_cliente = $codice_cup;
@@ -2129,22 +2157,27 @@ class InvoiceKp extends Invoice {
                 $nome_istituto = $adb->query_result($result_query, 0, 'nome_istituto');
                 $nome_istituto = html_entity_decode(strip_tags($nome_istituto), ENT_QUOTES, $default_charset);
                 $nome_istituto = trim($nome_istituto);
+                $nome_istituto = $this->replaceSpecialChart($nome_istituto);
 
                 $iban = $adb->query_result($result_query, 0, 'iban');
                 $iban = html_entity_decode(strip_tags($iban), ENT_QUOTES, $default_charset);
                 $iban = trim($iban);
+                $iban = str_replace(' ', '', $iban);
 
                 $abi = $adb->query_result($result_query, 0, 'abi');
                 $abi = html_entity_decode(strip_tags($abi), ENT_QUOTES, $default_charset);
                 $abi = trim($abi);
+                $abi = str_replace(' ', '', $abi);
 
                 $cab = $adb->query_result($result_query, 0, 'cab');
                 $cab = html_entity_decode(strip_tags($cab), ENT_QUOTES, $default_charset);
                 $cab = trim($cab);
+                $cab = str_replace(' ', '', $cab);
 
                 $bic = $adb->query_result($result_query, 0, 'bic');
                 $bic = html_entity_decode(strip_tags($bic), ENT_QUOTES, $default_charset);
                 $bic = trim($bic);
+                $bic = str_replace(' ', '', $bic);
 
             }
 
@@ -2179,6 +2212,9 @@ class InvoiceKp extends Invoice {
 
         $data_scadenza = $focus_scadenziario->column_fields["data_scadenza"];
         $data_scadenza = html_entity_decode(strip_tags($data_scadenza), ENT_QUOTES, $default_charset);
+        if( $data_scadenza == null || $data_scadenza == '0000-00-00' ){
+            $data_scadenza = "";
+        }
 
         $importo = $focus_scadenziario->column_fields["import"];
         $importo = html_entity_decode(strip_tags($importo), ENT_QUOTES, $default_charset);
@@ -2400,7 +2436,7 @@ class InvoiceKp extends Invoice {
                     INNER JOIN {$table_prefix}_inventorytaxinfo tax ON tax.taxname = kprel.id_tassa
                     WHERE rel.id = ".$id."
                     ORDER BY rel.sequence_no ASC";
-
+        
         $result_query = $adb->query($query);
         $num_result = $adb->num_rows($result_query);
 
@@ -2519,7 +2555,6 @@ class InvoiceKp extends Invoice {
             else{
                 $description = $nome_prodotto." - ".$description;
             }
-
             $description = $this->replaceSpecialChart($description);
 
             $id_tassa = $adb->query_result($result_query, $i, 'id_tassa');
@@ -2669,6 +2704,7 @@ class InvoiceKp extends Invoice {
             if( $norma == "" ){
                 $norma = "";
             }
+            $norma = $this->replaceSpecialChart($norma);
 
             $totale_imponibile = 0;
             $totale_imposta = 0;
@@ -3991,11 +4027,66 @@ class InvoiceKp extends Invoice {
         global $adb, $table_prefix, $current_user, $default_charset;
 
         $stringa = trim($stringa);
+
+        $stringa = $this->sanitizeXML($stringa);
+
         $stringa = preg_replace('/\s+/', ' ', $stringa);
         $stringa = str_replace('\n', " ", $stringa);
+        $stringa = str_replace('"', " ", $stringa);
+        $stringa = str_replace('&', " ", $stringa);
+        $stringa = str_replace("'", " ", $stringa);
+        $stringa = str_replace('<', " ", $stringa);
+        $stringa = str_replace('>', " ", $stringa);
 
         return $stringa;
 
+    }
+
+    function sanitizeXML($string){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        if (!empty($string)) {
+            // remove EOT+NOREP+EOX|EOT+<char> sequence (FatturaPA)
+            $string = preg_replace('/(\x{0004}(?:\x{201A}|\x{FFFD})(?:\x{0003}|\x{0004}).)/u', '', $string);
+    
+            $regex = '/(
+                [\xC0-\xC1] # Invalid UTF-8 Bytes
+                | [\xF5-\xFF] # Invalid UTF-8 Bytes
+                | \xE0[\x80-\x9F] # Overlong encoding of prior code point
+                | \xF0[\x80-\x8F] # Overlong encoding of prior code point
+                | [\xC2-\xDF](?![\x80-\xBF]) # Invalid UTF-8 Sequence Start
+                | [\xE0-\xEF](?![\x80-\xBF]{2}) # Invalid UTF-8 Sequence Start
+                | [\xF0-\xF4](?![\x80-\xBF]{3}) # Invalid UTF-8 Sequence Start
+                | (?<=[\x0-\x7F\xF5-\xFF])[\x80-\xBF] # Invalid UTF-8 Sequence Middle
+                | (?<![\xC2-\xDF]|[\xE0-\xEF]|[\xE0-\xEF][\x80-\xBF]|[\xF0-\xF4]|[\xF0-\xF4][\x80-\xBF]|[\xF0-\xF4][\x80-\xBF]{2})[\x80-\xBF] # Overlong Sequence
+                | (?<=[\xE0-\xEF])[\x80-\xBF](?![\x80-\xBF]) # Short 3 byte sequence
+                | (?<=[\xF0-\xF4])[\x80-\xBF](?![\x80-\xBF]{2}) # Short 4 byte sequence
+                | (?<=[\xF0-\xF4][\x80-\xBF])[\x80-\xBF](?![\x80-\xBF]) # Short 4 byte sequence (2)
+            )/x';
+            $string = preg_replace($regex, '', $string);
+    
+            $result = "";
+            $current;
+            $length = strlen($string);
+            for ($i=0; $i < $length; $i++) {
+                $current = ord($string{$i});
+                if (($current == 0x9) ||
+                    ($current == 0xA) ||
+                    ($current == 0xD) ||
+                    (($current >= 0x20) && ($current <= 0xD7FF)) ||
+                    (($current >= 0xE000) && ($current <= 0xFFFD)) ||
+                    (($current >= 0x10000) && ($current <= 0x10FFFF)))
+                {
+                    $result .= chr($current);
+                }
+                else{
+                    $ret;    // use this to strip invalid character(s)
+                    // $ret .= " ";    // use this to replace them with spaces
+                }
+            }
+            $string = $result;
+        }
+        return $string;
     }
 
 
