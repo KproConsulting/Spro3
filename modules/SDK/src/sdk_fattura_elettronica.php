@@ -250,4 +250,85 @@ KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_causale_pag_rite", 
 */
 /* kpro@tom240120191400 end */
 
+/* kpro@tom310120191640 */
+//Aggiunte del 31/01/2019 
+/*
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_applica_cassa', $label_campo = 'Applica Cassa', $uitype = '56', $columntype = 'varchar(3)', $typeofdata = 'C~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_tipo_cassa', $label_campo = 'Tipo Cassa', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_aliquota_cassa', $label_campo = 'Aliquota Cassa', $uitype = '9', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_aliq_iva_cassa', $label_campo = 'Aliquota IVA Cassa', $uitype = '9', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_natura_iva_cassa', $label_campo = 'Natura IVA Cassa', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_rif_amm_cassa', $label_campo = 'Rif. Amministrazione Cassa', $uitype = '1', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_ap_rit_cassa', $label_campo = 'Applica Ritenuta Cassa', $uitype = '56', $columntype = 'varchar(3)', $typeofdata = 'C~O', $readonly = '100', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_imponibile_cassa', $label_campo = 'Imponibile Cassa', $uitype = '71', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '99', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_tot_iva_cassa', $label_campo = 'Totale IVA Cassa', $uitype = '71', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '99', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_importo_cassa', $label_campo = 'Importo Contributo Cassa', $uitype = '71', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '99', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'Invoice', $blocco = 'LBL_INVOICE_INFORMATION', $nome_campo = 'kp_tot_iva_fat', $label_campo = 'Totale IVA', $uitype = '71', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '99', $helpinfo = '');
+
+
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC01", $valore = "Cassa nazionale previdenza e assistenza avvocati e procuratori legali");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC02", $valore = "Cassa previdenza dottori commercialisti");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC03", $valore = "Cassa previdenza e assistenza geometri");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC04", $valore = "Cassa nazionale previdenza e assistenza ingegneri e architetti liberi professionisti");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC05", $valore = "Cassa nazionale del notariato");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC06", $valore = "Cassa nazionale previdenza e assistenza ragionieri e periti commerciali");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC07", $valore = "ENASARCO");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC08", $valore = "ENPACL");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC09", $valore = "ENPAM");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC10", $valore = "ENPAF");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC11", $valore = "ENPAV");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC12", $valore = "ENPAIA");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC13", $valore = "Fondo previdenza impiegati imprese di spedizione e agenzie marittime");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC14", $valore = "INPGI");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC15", $valore = "ONAOSI");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC16", $valore = "CASAGIT");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC17", $valore = "EPPI");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC18", $valore = "EPAP");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC19", $valore = "ENPAB");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC20", $valore = "ENPAPI");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC21", $valore = "ENPAP");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_tipo_cassa", $codice = "TC22", $valore = "INPS");
+
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N1", $valore = "Escluse ex art. 15");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N2", $valore = "Non soggette");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N3", $valore = "Non imponibili");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N4", $valore = "Esenti");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N5", $valore = "Regime del margine / IVA non esposta in fattura");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N6", $valore = "Inversione contabile");
+KpSDK::aggiungiAPickingListMultilinguaggio($nome_campo = "kp_natura_iva_cassa", $codice = "N7", $valore = "IVA assolta in altro stato UE");
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_applica_cassa', $label_campo = 'Applica Cassa', $uitype = '56', $columntype = 'varchar(3)', $typeofdata = 'C~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_tipo_cassa', $label_campo = 'Tipo Cassa', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_aliquota_cassa', $label_campo = 'Aliquota Cassa', $uitype = '9', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_aliq_iva_cassa', $label_campo = 'Aliquota IVA Cassa', $uitype = '9', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_natura_iva_cassa', $label_campo = 'Natura IVA Cassa', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_rif_amm_cassa', $label_campo = 'Rif. Amministrazione Cassa', $uitype = '1', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_ap_rit_cassa', $label_campo = 'Applica Ritenuta Cassa', $uitype = '56', $columntype = 'varchar(3)', $typeofdata = 'C~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_tipo_ritenuta', $label_campo = 'Tipo Ritenuta', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_causale_pag_rite', $label_campo = 'Causale Pagamento Ritenuta', $uitype = '1015', $columntype = 'varchar(255)', $typeofdata = 'V~O', $readonly = '1', $helpinfo = '');
+
+KpSDK::registraCampo($nome_modulo = 'KpBusinessUnit', $blocco = 'LBL_KPBUSINESSUNIT_INFORMATION', $nome_campo = 'kp_aliquota_ritenuta', $label_campo = 'Aliquota Ritenuta', $uitype = '9', $columntype = 'decimal(15,2)', $typeofdata = 'NN~O~15,2', $readonly = '1', $helpinfo = '');
+*/
+/* kpro@tom310120191640 end */
+
+
+
 ?>
