@@ -170,6 +170,8 @@ $smarty->display('SproCore/Settings/KpCompanyInfo.tpl');
 function CreateTabellaBanca($id, $nome){
     global $current_language, $adb, $table_prefix, $default_charset;
 
+    $nome = addslashes($nome);
+
     $insert = "INSERT INTO kp_banche_company 
                 (id, banca, nome_istituto, iban, abi, cab, bic, aggiornato)
                 VALUES
