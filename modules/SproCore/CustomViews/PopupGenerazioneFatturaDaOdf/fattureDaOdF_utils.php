@@ -369,16 +369,25 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
         //se la business unit è compilata, prendo i relativi dati
         if($businessunit != 0){
             $q_dati_bu = "SELECT bu.kp_mod_tassazione,
-                        bu.kp_conf_tassazione,
-                        bu.kp_avviso_fattura,
-                        bu.kp_ritenuta_acconto,
-                        cur.id
-                        FROM {$table_prefix}_kpbusinessunit bu
-                        LEFT JOIN {$table_prefix}_currency_info cur ON cur.currency_code = bu.kp_valuta
-                            AND cur.currency_status = 'Active' AND cur.deleted = 0
-                        INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = bu.kpbusinessunitid
-                        WHERE ent.deleted = 0 AND bu.kpbusinessunitid = ".$businessunit;
-            $res_dati_bu = $adb->query($q_dati_bu);
+                            bu.kp_conf_tassazione,
+                            bu.kp_avviso_fattura,
+                            bu.kp_ritenuta_acconto,
+                            bu.kp_applica_cassa,
+                            bu.kp_tipo_cassa,
+                            bu.kp_aliquota_cassa,
+                            bu.kp_ap_rit_cassa,
+                            bu.kp_natura_iva_cassa,
+                            bu.kp_rif_amm_cassa,
+                            bu.kp_tipo_ritenuta,
+                            bu.kp_causale_pag_rite,
+                            bu.kp_aliquota_ritenuta,
+                            bu.kp_aliq_iva_cassa,
+                            cur.id
+                            FROM {$table_prefix}_kpbusinessunit bu
+                            LEFT JOIN {$table_prefix}_currency_info cur ON cur.currency_code = bu.kp_valuta AND cur.currency_status = 'Active' AND cur.deleted = 0
+                            INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = bu.kpbusinessunitid
+                            WHERE ent.deleted = 0 AND bu.kpbusinessunitid = ".$businessunit;    //kpro@tom310120191640
+                $res_dati_bu = $adb->query($q_dati_bu);
             if($adb->num_rows($res_dati_bu) > 0){
                 $mod_tassazione = $adb->query_result($res_dati_bu,0,'kp_mod_tassazione');
                 $mod_tassazione = html_entity_decode(strip_tags($mod_tassazione), ENT_QUOTES,$default_charset);
@@ -413,6 +422,83 @@ function GeneraInvoiceDaOdF($odfid, $data_fattura, $mod_pagamento=0){
                 $mod_tassazione = 'individual';
                 $conf_tassazione = '0';
                 $ritenuta_acconto_bu = '0';
+
+                /* kpro@tom310120191640 */
+
+                $applica_cassa = $adb->query_result($res_dati_bu, 0, 'kp_applica_cassa');
+                $applica_cassa = html_entity_decode(strip_tags($applica_cassa), ENT_QUOTES, $default_charset);
+                if($applica_cassa == "1" || $applica_cassa == 1 ){
+                    $applica_cassa = true;
+                }
+                else{
+                    $applica_cassa = false;
+                }
+
+                $tipo_cassa = $adb->query_result($res_dati_bu, 0, 'kp_tipo_cassa');
+                $tipo_cassa = html_entity_decode(strip_tags($tipo_cassa), ENT_QUOTES, $default_charset);
+                if($tipo_cassa == null || $tipo_cassa == ""){
+                    $tipo_cassa = '';
+                }
+
+                $aliquota_cassa = $adb->query_result($res_dati_bu, 0, 'kp_aliquota_cassa');
+                $aliquota_cassa = html_entity_decode(strip_tags($aliquota_cassa), ENT_QUOTES, $default_charset);
+                if($aliquota_cassa == null || $aliquota_cassa == ""){
+                    $aliquota_cassa = 0;
+                }
+
+                $applica_rititenuta_cassa = $adb->query_result($res_dati_bu, 0, 'kp_ap_rit_cassa');
+                $applica_rititenuta_cassa = html_entity_decode(strip_tags($applica_rititenuta_cassa), ENT_QUOTES, $default_charset);
+                if($applica_rititenuta_cassa == "1" || $applica_rititenuta_cassa == 1 ){
+                    $applica_rititenuta_cassa = true;
+                    $applica_ritenuta = true;
+                }
+                else{
+                    $applica_rititenuta_cassa = false;
+                }
+
+                $natura_iva_cassa = $adb->query_result($res_dati_bu, 0, 'kp_natura_iva_cassa');
+                $natura_iva_cassa = html_entity_decode(strip_tags($natura_iva_cassa), ENT_QUOTES, $default_charset);
+                if($natura_iva_cassa == null || $natura_iva_cassa == ""){
+                    $natura_iva_cassa = '';
+                }
+
+                $rif_amm_cassa = $adb->query_result($res_dati_bu, 0, 'kp_rif_amm_cassa');
+                $rif_amm_cassa = html_entity_decode(strip_tags($rif_amm_cassa), ENT_QUOTES, $default_charset);
+                if($rif_amm_cassa == null || $rif_amm_cassa == ""){
+                    $rif_amm_cassa = '';
+                }
+
+                $tipo_ritenuta_cassa = $adb->query_result($res_dati_bu, 0, 'kp_tipo_ritenuta');
+                $tipo_ritenuta_cassa = html_entity_decode(strip_tags($tipo_ritenuta_cassa), ENT_QUOTES, $default_charset);
+                if($tipo_ritenuta_cassa == null || $tipo_ritenuta_cassa == ""){
+                    $tipo_ritenuta_cassa = '';
+                }
+
+                $causale_pag_rite_cassa = $adb->query_result($res_dati_bu, 0, 'kp_causale_pag_rite');
+                $causale_pag_rite_cassa = html_entity_decode(strip_tags($causale_pag_rite_cassa), ENT_QUOTES, $default_charset);
+                if($causale_pag_rite_cassa == null || $causale_pag_rite_cassa == ""){
+                    $causale_pag_rite_cassa = '';
+                }
+
+                $aliquota_ritenuta_cassa = $adb->query_result($res_dati_bu, 0, 'kp_aliquota_ritenuta');
+                $aliquota_ritenuta_cassa = html_entity_decode(strip_tags($aliquota_ritenuta_cassa), ENT_QUOTES, $default_charset);
+                if($aliquota_ritenuta_cassa == null || $aliquota_ritenuta_cassa == ""){
+                    $aliquota_ritenuta_cassa = 0;
+                }
+
+                $aliquota_iva_cassa = $adb->query_result($res_dati_bu, 0, 'kp_aliq_iva_cassa');
+                $aliquota_iva_cassa = html_entity_decode(strip_tags($aliquota_iva_cassa), ENT_QUOTES, $default_charset);
+                if($aliquota_iva_cassa == null || $aliquota_iva_cassa == ""){
+                    $aliquota_iva_cassa = 0;
+                }
+
+                if( $applica_rititenuta_cassa ){
+                    $tipo_ritenuta = $tipo_ritenuta_cassa;
+                    $causale_pag_rite = $causale_pag_rite_cassa;
+                    $aliquota_ritenuta = $aliquota_ritenuta_cassa;
+                }
+
+                /* kpro@tom310120191640 end */
 
             }
             else{
@@ -573,6 +659,20 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
                 $invoice->column_fields['kp_aliquota_ritenuta'] = $aliquota_ritenuta;
             }
             /* kpro@tom240120191400 end */
+
+            /* kpro@tom310120191640 */
+            if( $applica_cassa ){
+                $invoice->column_fields['kp_applica_cassa'] = '1';
+                $invoice->column_fields['kp_tipo_cassa'] = $tipo_cassa;
+                $invoice->column_fields['kp_aliquota_cassa'] = $aliquota_cassa;
+                $invoice->column_fields['kp_aliq_iva_cassa'] = $aliquota_iva_cassa;
+                if( $applica_rititenuta_cassa ){
+                    $invoice->column_fields['kp_ap_rit_cassa'] = '1';
+                }
+                $invoice->column_fields['kp_natura_iva_cassa'] = $natura_iva_cassa;
+                $invoice->column_fields['kp_rif_amm_cassa'] = $rif_amm_cassa;
+            }
+            /* kpro@tom310120191640 end */
 
             $invoice->save('Invoice', $longdesc=true, $offline_update=false, $triggerEvent=false); 
 
@@ -744,7 +844,11 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
     /* kpro@tom240120191400 */
     $focus_invoice = CRMEntity::getInstance('Invoice'); 
     $focus_invoice->retrieve_entity_info($invoiceid, "Invoice");
-    $focus_invoice->setRitenuta();
+    $focus_invoice->setImponibileFattura(); //kpro@tom310120191640
+    $focus_invoice->setCassa();  //kpro@tom310120191640
+    $focus_invoice->setRitenuta(); //kpro@tom240120191400
+    $focus_invoice->setTotaleFattura();  //kpro@tom310120191640
+    $focus_invoice->setTotaleTasseFattura(); //kpro@tom310120191640
     /* kpro@tom240120191400 end */
 
     return $risultato;
