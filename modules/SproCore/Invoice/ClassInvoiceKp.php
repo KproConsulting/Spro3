@@ -86,16 +86,90 @@ class InvoiceKp extends Invoice {
 
         }
 
+        $this->setImponibileFattura(); //kpro@tom310120191640
+        $this->setCassa();  //kpro@tom310120191640
         $this->setRitenuta(); //kpro@tom240120191400
+        $this->setTotaleFattura();  //kpro@tom310120191640
+        $this->setTotaleTasseFattura(); //kpro@tom310120191640
 
     }
+
+    /* kpro@tom310120191640 */
+
+    function setCassa(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_imponibile = $this->getImponibileFattura();
+
+        $applica_cassa = $this->column_fields["kp_applica_cassa"];
+        $applica_cassa = html_entity_decode(strip_tags($applica_cassa), ENT_QUOTES, $default_charset);
+        if( $applica_cassa == 'on' || $applica_cassa == '1' ){
+            $applica_cassa = true;
+        }
+        else{
+            $applica_cassa = false;
+        }
+
+        $aliquota_cassa = $this->column_fields["kp_aliquota_cassa"];
+        $aliquota_cassa = html_entity_decode(strip_tags($aliquota_cassa), ENT_QUOTES, $default_charset);
+        if( $aliquota_cassa == null || $aliquota_cassa == '' ){
+            $aliquota_cassa = 0;
+        }
+
+        $aliquota_iva_cassa = $this->column_fields["kp_aliq_iva_cassa"];
+        $aliquota_iva_cassa = html_entity_decode(strip_tags($aliquota_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $aliquota_iva_cassa == null || $aliquota_iva_cassa == '' ){
+            $aliquota_iva_cassa = 0;
+        }
+
+        if( $applica_cassa && $aliquota_cassa != 0 ){
+
+            $imponibile_cassa = $total_imponibile * $aliquota_cassa / 100;
+
+            if( $aliquota_iva_cassa != 0 ){
+                $totale_iva_cassa = $imponibile_cassa * $aliquota_iva_cassa / 100;
+                $importo_cassa = $imponibile_cassa + $totale_iva_cassa;
+            }
+            else{
+                $totale_iva_cassa = 0;
+                $importo_cassa = $imponibile_cassa;
+            }
+
+        }
+        else{
+            $totale_iva_cassa = 0;
+            $importo_cassa = 0;
+            $imponibile_cassa = 0;
+        }
+
+        $update = "UPDATE {$table_prefix}_invoice SET
+                    kp_imponibile_cassa = ".$imponibile_cassa.",
+                    kp_tot_iva_cassa = ".$totale_iva_cassa.",
+                    kp_importo_cassa = ".$importo_cassa."
+                    WHERE invoiceid = ".$this->id;
+
+        $adb->query($update);
+
+    }
+
+    function setTotaleTasseFattura(){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $total_tasse = $this->getTotaleTasseFattura();
+
+        $update = "UPDATE {$table_prefix}_invoice SET
+                    kp_tot_iva_fat = ".$total_tasse."
+                    WHERE invoiceid = ".$this->id;
+
+        $adb->query($update);
+
+    }
+
+    /* kpro@tom310120191640 end */
 
     /* kpro@tom240120191400 */
     function setRitenuta(){
         global $adb, $table_prefix, $current_user, $default_charset;
-
-        $this->setImponibileFattura();
-        $this->setTotaleFattura();
 
         $total_imponibile = $this->getImponibileFattura();
 
@@ -114,20 +188,15 @@ class InvoiceKp extends Invoice {
             $aliquota_ritenuta = 0;
         }
 
-        $total_fattura = $this->getTotaleFattura();
-
         if( $applica_ritenuta && $aliquota_ritenuta != 0 ){
             $importo_ritenuta = $total_imponibile * $aliquota_ritenuta / 100;
-            $totale_da_pagare = $total_fattura - $importo_ritenuta;
         }
         else{
             $importo_ritenuta = 0;
-            $totale_da_pagare = $total_fattura;
         }
 
         $update = "UPDATE {$table_prefix}_invoice SET
-                    kp_importo_ritenuta = ".$importo_ritenuta.",
-                    kp_tot_da_pagare = ".$totale_da_pagare."
+                    kp_importo_ritenuta = ".$importo_ritenuta."
                     WHERE invoiceid = ".$this->id;
 
         $adb->query($update);
@@ -185,9 +254,20 @@ class InvoiceKp extends Invoice {
 
         $total_fattura = $this->getTotaleFattura();
 
+        /* kpro@tom310120191640 */
+        $importo_ritenuta = $this->column_fields["kp_importo_ritenuta"];
+        $importo_ritenuta = html_entity_decode(strip_tags($importo_ritenuta), ENT_QUOTES, $default_charset);
+        if( $importo_ritenuta == null || $importo_ritenuta == '' ){
+            $importo_ritenuta = 0;
+        }
+
+        $totale_da_pagare = $total_fattura - $importo_ritenuta;
+
+        /* kpro@tom310120191640 end */
+
         $update = "UPDATE {$table_prefix}_invoice SET
                     kp_tot_fattura = ".$total_fattura.",
-                    kp_tot_da_pagare = ".$total_fattura."
+                    kp_tot_da_pagare = ".$totale_da_pagare."
                     WHERE invoiceid = ".$this->id;
 
         $adb->query($update);
@@ -201,6 +281,16 @@ class InvoiceKp extends Invoice {
 
         $total_fattura = $this->column_fields["hdnGrandTotal"];
         $total_fattura = html_entity_decode(strip_tags($total_fattura), ENT_QUOTES, $default_charset);
+
+        /* kpro@tom310120191640 */
+        $importo_cassa = $this->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == '' ){
+            $importo_cassa = 0;
+        }
+
+        $total_fattura = $total_fattura + $importo_cassa;
+        /* kpro@tom310120191640 end */
 
         $split_payment = $this->column_fields["kp_split_payment"];
         $split_payment = html_entity_decode(strip_tags($split_payment), ENT_QUOTES, $default_charset);
@@ -241,6 +331,18 @@ class InvoiceKp extends Invoice {
             $total_tasse = html_entity_decode(strip_tags($total_tasse), ENT_QUOTES, $default_charset);
 
         }
+
+        /* kpro@tom310120191640 */
+
+        $tot_iva_cassa = $this->column_fields["kp_tot_iva_cassa"];
+        $tot_iva_cassa = html_entity_decode(strip_tags($tot_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $tot_iva_cassa == null || $tot_iva_cassa == '' ){
+            $tot_iva_cassa = 0;
+        }
+
+        $total_tasse = $total_tasse + $tot_iva_cassa;
+
+        /* kpro@tom310120191640 end */
 
         return $total_tasse;
 
@@ -1962,7 +2064,7 @@ class InvoiceKp extends Invoice {
             $DettaglioLinee->appendChild($domtree->createElement( 'AliquotaIVA', $linea["percentage"] ) );
 
             /* kpro@tom240120191400 */
-            if( $applica_ritenuta && $importo_ritenuta != 0 && $linea["percentage"] > 0 ){
+            if( $applica_ritenuta && $importo_ritenuta != 0 ){
                 //2.2.1.13 <Ritenuta> <0.1>
                 $DettaglioLinee->appendChild($domtree->createElement( 'Ritenuta', 'SI' ) );
             }
