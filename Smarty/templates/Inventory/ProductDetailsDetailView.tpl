@@ -167,7 +167,7 @@
 		<td width="88%" class="crmTableRow small" align="right"><b>{$APP.LBL_NET_TOTAL}</td>
 		<td width="12%" class="crmTableRow small" align="right"><b>{$FINAL_DETAILS.hdnSubTotal|formatUserNumber}</b></td>
 	</tr>
-	<tr>
+	<tr style="display: none;"> <!-- kpro@tom01022019 -->
 		<td align="right" class="crmTableRow small lineOnTop">(-)&nbsp;<b><a href="javascript:void(0);" onclick="alert('{$FINAL_DETAILS.discountInfoMessage}')" >{$APP.LBL_DISCOUNT}</a></b></td>
 		<td align="right" class="crmTableRow small lineOnTop">{$FINAL_DETAILS.discountTotal_final|formatUserNumber}</td>
 	</tr>
@@ -177,11 +177,11 @@
 		<td align="right" class="crmTableRow small">{$FINAL_DETAILS.tax_totalamount|formatUserNumber}</td>
 	</tr>
 	{/if}
-	<tr>
+	<tr style="display: none;"> <!-- kpro@tom01022019 -->
 		<td align="right" class="crmTableRow small">(+)&nbsp;<b>{$APP.LBL_SHIPPING_AND_HANDLING_CHARGES}</b></td>
 		<td align="right" class="crmTableRow small">{$FINAL_DETAILS.shipping_handling_charge|formatUserNumber}</td>
 	</tr>
-	<tr>
+	<tr style="display: none;"> <!-- kpro@tom01022019 -->
 		<td align="right" class="crmTableRow small">(+)&nbsp;<b><a href="javascript:;" onclick="alert('{$FINAL_DETAILS.shtaxesInfoMessage}')">{$APP.LBL_TAX_FOR_SHIPPING_AND_HANDLING}</a></b></td>
 		<td align="right" class="crmTableRow small">{$FINAL_DETAILS.shtax_totalamount|formatUserNumber}</td>
 	</tr>
