@@ -52,6 +52,12 @@ print $json;
 function SetDatiBanca($id, $banca, $nome_istituto, $iban, $abi, $cab, $bic){
     global $current_language, $adb, $table_prefix, $default_charset;
 
+    $nome_istituto = html_entity_decode(strip_tags($nome_istituto), ENT_QUOTES, $default_charset);
+    $nome_istituto = addslashes($nome_istituto);
+
+    $banca = html_entity_decode(strip_tags($banca), ENT_QUOTES, $default_charset);
+    $banca = addslashes($banca);
+
     $update = "UPDATE kp_banche_company SET
                 banca = '".$banca."',
                 nome_istituto = '".$nome_istituto."',
