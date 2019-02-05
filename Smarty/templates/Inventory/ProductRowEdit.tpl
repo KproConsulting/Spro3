@@ -46,10 +46,10 @@
 			<i class="vteicon md-link" onclick="deleteRow('{$MODULE}',{$row_no},'{$IMAGE_PATH}')">delete</i>
 		{/if}<br/><br/>
 		{if $row_no neq 1}
-			<a href="javascript:moveUpDown('UP','{$MODULE}',{$row_no})" title="Move Upward"><i class="vteicon">arrow_upward</i></a>
+			<a href="javascript:kpMoveUpDown('UP','{$MODULE}',{$row_no})" title="Move Upward"><i class="vteicon">arrow_upward</i></a> <!-- kpro@tom101220181102 --> 
 		{/if}
 		{if not $smarty.foreach.outer1.last}
-			<a href="javascript:moveUpDown('DOWN','{$MODULE}',{$row_no})" title="Move Downward"><i class="vteicon">arrow_downward</i></a>
+			<a href="javascript:kpMoveUpDown('DOWN','{$MODULE}',{$row_no})" title="Move Downward"><i class="vteicon">arrow_downward</i></a> <!-- kpro@tom101220181102 --> 
 		{/if}
 		<input type="hidden" id="{$deleted}" name="{$deleted}" value="0">
 	</td>
@@ -130,7 +130,7 @@
 
 					{if $MODULE eq 'Invoice'}
 
-						<table style="width: 100%;">
+						<table style="width: 100%;" id="kpRifOrdineCliente_row_{$row_no}">
 							<tr>
 								<td style="width: 50%;">
 									<span style="font-style:italic">Rif. Ordine Cliente: <b>{$data.$kpRifOrdineCliente}</b></span>
@@ -304,13 +304,13 @@
 				<div class="dvtCellInfo">
 					<!-- kpro@tom101220181102 --> 
 
-					<table>
+					<table width="100%" id="kp_tax_resume_div{$row_no}">
 						<tr>
-							<td style="text-align: left;">
+							<td align="left" style="text-align: left;">
 								<input type="hidden" readonly name="kpTaxName{$row_no}" id="kpTaxName{$row_no}" value="{$data.$taxName}">
-								<input type="text" readonly name="kpTaxLabel{$row_no}" id="kpTaxLabel{$row_no}" value="{$data.$taxLabel}">
+								<span id="kpTaxLabel{$row_no}">{$data.$taxLabel}</span>
 							</td>
-							<td style="text-align: right;">
+							<td align="right" style="text-align: right;">
 								<span id="taxTotal{$row_no}" style="padding:3px 0;">{$data.$taxTotal|formatUserNumber}</span>
 							</td>
 						</tr>

@@ -1,9 +1,5 @@
 {* crmv@42024 *}
 
-<!-- kpro@tom101220181102 --> 
-<script type="text/javascript" src="modules/SproCore/include/js/KpInventory.js"></script>
-<!-- kpro@tom101220181102 end --> 
-
 <table width="100%" border="0" cellpadding="5" cellspacing="0" class="small" id="tax_table{$row_no}">
 	<tr>
 		<td id="tax_div_title{$row_no}" class="level3Bg" colspan="3" align="left" nowrap><b>{$APP.LABEL_SET_TAX_FOR}: {$data.$totalAfterDiscount|formatUserNumber}</b></td>
@@ -21,21 +17,21 @@
 		<td align="left" class="lineOnTop">
 			{if $tax_data.kpTassaSelezionata eq '1' }
 				<script type="text/javascript">
-					kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');
+					kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');
 				</script>
-				<input type="radio" checked id="{$taxname}_check"  class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
+				<input type="radio" checked id="{$taxname}_check"  class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
 			{elseif count($data.taxes) eq 1 }
 				<script type="text/javascript">
-					kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');
+					kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');
 				</script>
-				<input type="radio" checked id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
+				<input type="radio" checked id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
 			{elseif $tax_data.kpTassaSelezionata neq '0' && $tax_data.kpTassaSelezionata neq '1' && $taxname eq 'tax1' }
 				<script type="text/javascript">
-					kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');
+					kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');
 				</script>
-				<input type="radio" checked id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
+				<input type="radio" checked id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="attivo" onChange="kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
 			{else}
-				<input type="radio" id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="non_attivo" onChange="kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
+				<input type="radio" id="{$taxname}_check" class="{$row_no}_check" name="{$row_no}_check" value="non_attivo" onChange="kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">	
 			{/if}
 
 			<script type="text/javascript">
@@ -47,8 +43,9 @@
 		<td align="center" class="lineOnTop" id="{$taxname}_nomeTassa" >{$tax_data.taxlabel}</td>
 
 		<td align="left" class="lineOnTop">
-			<input type="text" readonly class="small tax_row_{$row_no}" size="5" name="{$taxname}" id="{$taxname}" value="{$tax_data.percentage|formatUserNumber}" onChange="kpCalcCurrentTax('{$taxname}',{$row_no},{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">&nbsp;% {*//crmv@43358*}
-			
+
+			<input type="text" readonly class="small tax_row_{$row_no}" size="5" name="{$taxname}" id="{$taxname}" value="{$tax_data.percentage|formatUserNumber}" onChange="kpCalcCurrentTax('{$taxname}','kprow_{$row_no}',{$tax_row_no},'{$tax_data.taxlabel}');calcTotal();">&nbsp;% 	
+
 			{if $tax_data.percentuale_default && $tax_data.percentuale_default neq '0' && $tax_data.percentuale_default neq '' }
 				<input type="hidden" id="{$taxname}_percentuale" value="{$tax_data.percentuale_default|formatUserNumber}">
 			{else}
