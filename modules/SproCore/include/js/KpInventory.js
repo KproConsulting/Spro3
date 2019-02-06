@@ -122,6 +122,8 @@ function kpCalcCurrentTax(tax_name, curr_row, tax_row, taxlabel) {
 }
 
 function kpRicalcolaTutteLeTasseTasse(){
+
+	//console.log("kpRicalcolaTutteLeTasseTasse");
 	
 	jQuery("input[class$='_check']").each(function() {
 		//console.log(this.id);
@@ -319,8 +321,6 @@ function kpMoveUpDown(sType,oModule,iIndex) {
 	
 	kpMoveUpDownTaxes(iIndex,iSwapIndex); //kpro@tom101220181102
 
-	kpMoveUpRiferimentiOrdine(iIndex,iSwapIndex); //kpro@tom101220181102
-
 	settotalnoofrows();
 	
 	// this has to stay here, or the discounts won't be calculated correctly
@@ -353,6 +353,11 @@ function kpMoveUpDown(sType,oModule,iIndex) {
 	kpRicalcolaCheckTasse(); //kpro@tom101220181102
 
 	calcTotal();
+
+	if( oModule == 'Invoice') {
+		kpMoveUpRiferimentiOrdine(iIndex,iSwapIndex); //kpro@tom101220181102
+	}
+
 }
 
 //crmv@55228	crmv@55232
@@ -432,38 +437,43 @@ function kpMoveUpDownTaxes(iIndex,iSwapIndex) {
 
 function kpMoveUpRiferimentiOrdine(iIndex,iSwapIndex){
 
-	var div1 = jQuery('#kpRifOrdineCliente_row_'+iIndex).html();
-	var div2 = jQuery('#kpRifOrdineCliente_row_'+iSwapIndex).html();
+	if( jQuery('#kpRifOrdineCliente_row_'+iIndex) && jQuery('#kpRifOrdineCliente_row_'+iSwapIndex) ){
 
-	for(j = 0; j < 2; j++) {
-		if (j == 0) {
-			var div = div1;
-			var oldIndex = iIndex;
-			var newIndex = iSwapIndex;
-		} else {
-			var div = div2;
-			var oldIndex = iSwapIndex;
-			var newIndex = iIndex;
+		var div1 = jQuery('#kpRifOrdineCliente_row_'+iIndex).html();
+		var div2 = jQuery('#kpRifOrdineCliente_row_'+iSwapIndex).html();
+
+		var div = "";
+
+		for(j = 0; j < 2; j++) {
+			if (j == 0) {
+				div = div1;
+				var oldIndex = iIndex;
+				var newIndex = iSwapIndex;
+			} else {
+				div = div2;
+				var oldIndex = iSwapIndex;
+				var newIndex = iIndex;
+			}
+
+			div = div
+				.replace(new RegExp('kpRifOrdineCliente_row_'+oldIndex,'g'), 'kpRifOrdineCliente_row_'+newIndex)
+				.replace(new RegExp('kpRifOrdineCliente'+oldIndex,'g'), 'kpRifOrdineCliente'+newIndex)
+				.replace(new RegExp('kpDataOrdineCliente'+oldIndex,'g'), 'kpDataOrdineCliente'+newIndex)
+				.replace(new RegExp('kpCodiceCup'+oldIndex,'g'), 'kpCodiceCup'+newIndex)
+				.replace(new RegExp('kpCodiceCig'+oldIndex,'g'), 'kpCodiceCig'+newIndex);
+
+			if (j == 0) {
+				var div1 = div;
+
+			} else {
+				var div2 = div;
+			}
+
 		}
 
-		div = div
-			.replace(new RegExp('kpRifOrdineCliente_row_'+oldIndex,'g'), 'kpRifOrdineCliente_row_'+newIndex)
-			.replace(new RegExp('kpRifOrdineCliente'+oldIndex,'g'), 'kpRifOrdineCliente'+newIndex)
-			.replace(new RegExp('kpDataOrdineCliente'+oldIndex,'g'), 'kpDataOrdineCliente'+newIndex)
-			.replace(new RegExp('kpCodiceCup'+oldIndex,'g'), 'kpCodiceCup'+newIndex)
-			.replace(new RegExp('kpCodiceCig'+oldIndex,'g'), 'kpCodiceCig'+newIndex);
-
-		if (j == 0) {
-			var div1 = div;
-
-		} else {
-			var div2 = div;
-		}
-
+		jQuery('#kpRifOrdineCliente_row_'+iIndex).html(div2);
+		jQuery('#kpRifOrdineCliente_row_'+iSwapIndex).html(div1);
 	}
-
-	jQuery('#kpRifOrdineCliente_row_'+iIndex).html(div2);
-	jQuery('#kpRifOrdineCliente_row_'+iSwapIndex).html(div1);
 
 }
 
