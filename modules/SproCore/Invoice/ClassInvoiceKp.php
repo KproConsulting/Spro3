@@ -41,6 +41,13 @@ class InvoiceKp extends Invoice {
         parent::save_module($module); 
 
         require_once('Invoice_utils.php');
+
+        $this->setImponibileFattura(); //kpro@tom310120191640
+        $this->setCassa();  //kpro@tom310120191640
+        $this->setRitenuta(); //kpro@tom240120191400
+        $this->setTotaleFattura();  //kpro@tom310120191640
+        $this->setTotaleTasseFattura(); //kpro@tom310120191640
+
         /* kpro@bid130920181600 */
         if($this->column_fields['invoicedate'] != null && $this->column_fields['invoicedate'] != null && $this->column_fields['invoicedate'] != '0000-00-00'){
             aggiornaDataFatturaOdF($this->id, $this->column_fields['invoicedate']); 
@@ -86,12 +93,6 @@ class InvoiceKp extends Invoice {
 
         }
 
-        $this->setImponibileFattura(); //kpro@tom310120191640
-        $this->setCassa();  //kpro@tom310120191640
-        $this->setRitenuta(); //kpro@tom240120191400
-        $this->setTotaleFattura();  //kpro@tom310120191640
-        $this->setTotaleTasseFattura(); //kpro@tom310120191640
-
     }
 
     /* kpro@tom310120191640 */
@@ -124,15 +125,19 @@ class InvoiceKp extends Invoice {
 
         if( $applica_cassa && $aliquota_cassa != 0 ){
 
-            $imponibile_cassa = $total_imponibile * $aliquota_cassa / 100;
+            $imponibile_cassa = $total_imponibile;
+
+            $importo_cassa = $imponibile_cassa * $aliquota_cassa / 100;
 
             if( $aliquota_iva_cassa != 0 ){
-                $totale_iva_cassa = $imponibile_cassa * $aliquota_iva_cassa / 100;
-                $importo_cassa = $imponibile_cassa + $totale_iva_cassa;
+
+                $totale_iva_cassa = $importo_cassa * $aliquota_iva_cassa / 100;
+
             }
             else{
+
                 $totale_iva_cassa = 0;
-                $importo_cassa = $imponibile_cassa;
+
             }
 
         }
@@ -208,6 +213,33 @@ class InvoiceKp extends Invoice {
 
         $total_imponibile = $this->getImponibileFattura();
 
+        /* kpro@tom310120191640 */
+        $importo_cassa = $this->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == "" ){
+            $importo_cassa = 0;
+        }
+
+        $aliq_iva_cassa = $this->column_fields["kp_aliq_iva_cassa"];
+        $aliq_iva_cassa = html_entity_decode(strip_tags($aliq_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $aliq_iva_cassa == null || $aliq_iva_cassa == "" ){
+            $aliq_iva_cassa = 0;
+        }
+
+        $applica_cassa = $this->column_fields["kp_applica_cassa"];
+        $applica_cassa = html_entity_decode(strip_tags($applica_cassa), ENT_QUOTES, $default_charset);
+        if( $applica_cassa == 'on' || $applica_cassa == '1' ){
+            $applica_cassa = true;
+        }
+        else{
+            $applica_cassa = false;
+        }
+
+        if( $applica_cassa && $aliq_iva_cassa != 0 ){
+            $total_imponibile = $total_imponibile + $importo_cassa;
+        }
+        /* kpro@tom310120191640 end */
+
         $update = "UPDATE {$table_prefix}_invoice SET
                     kp_tot_imponibile = ".$total_imponibile."
                     WHERE invoiceid = ".$this->id;
@@ -277,19 +309,8 @@ class InvoiceKp extends Invoice {
     function getTotaleFattura(){
         global $adb, $table_prefix, $current_user, $default_charset;
 
-        $total_fattura = 0;
-
-        $total_fattura = $this->column_fields["hdnGrandTotal"];
-        $total_fattura = html_entity_decode(strip_tags($total_fattura), ENT_QUOTES, $default_charset);
-
         /* kpro@tom310120191640 */
-        $importo_cassa = $this->column_fields["kp_importo_cassa"];
-        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
-        if( $importo_cassa == null || $importo_cassa == '' ){
-            $importo_cassa = 0;
-        }
-
-        $total_fattura = $total_fattura + $importo_cassa;
+        $total_fattura = $this->getImportoTotaleDocumento($this->id);
         /* kpro@tom310120191640 end */
 
         $split_payment = $this->column_fields["kp_split_payment"];
@@ -1259,39 +1280,92 @@ class InvoiceKp extends Invoice {
 
     }
 
+    /* kpro@tom310120191640 */
     function getCassaPrevidenziale(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
+
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false); 
+
+        $aliq_iva_cassa = $focus_fattura->column_fields["kp_aliq_iva_cassa"];
+        $aliq_iva_cassa = html_entity_decode(strip_tags($aliq_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $aliq_iva_cassa == null || $aliq_iva_cassa == "" ){
+            $aliq_iva_cassa = 0;
+        }
+        $aliq_iva_cassa = number_format($aliq_iva_cassa, 2, ".", "");
+
+        $natura_iva_cassa = $focus_fattura->column_fields["kp_natura_iva_cassa"];
+        $natura_iva_cassa = html_entity_decode(strip_tags($natura_iva_cassa), ENT_QUOTES, $default_charset);
+
+        $tipo_cassa = $focus_fattura->column_fields["kp_tipo_cassa"];
+        $tipo_cassa = html_entity_decode(strip_tags($tipo_cassa), ENT_QUOTES, $default_charset);
+
+        $aliquota_cassa = $focus_fattura->column_fields["kp_aliquota_cassa"];
+        $aliquota_cassa = html_entity_decode(strip_tags($aliquota_cassa), ENT_QUOTES, $default_charset);
+        if( $aliquota_cassa == null || $aliquota_cassa == "" ){
+            $aliquota_cassa = 0;
+        }
+        $aliquota_cassa = number_format($aliquota_cassa, 2, ".", "");
+
+        $importo_cassa = $focus_fattura->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == "" ){
+            $importo_cassa = 0;
+        }
+        $importo_cassa = number_format($importo_cassa, 2, ".", "");
+
+        $imponibile_cassa = $focus_fattura->column_fields["kp_imponibile_cassa"];
+        $imponibile_cassa = html_entity_decode(strip_tags($imponibile_cassa), ENT_QUOTES, $default_charset);
+        if( $imponibile_cassa == null || $imponibile_cassa == "" ){
+            $imponibile_cassa = 0;
+        }
+        $imponibile_cassa = number_format($imponibile_cassa, 2, ".", "");
+
+        $applica_ritenuta = $focus_fattura->column_fields["kp_applica_ritenuta"];
+        $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
+        if( $applica_ritenuta == 'on' || $applica_ritenuta == '1' ){
+            $applica_ritenuta = true;
+        }
+        else{
+            $applica_ritenuta = false;
+        }
+
 
         //2.1.1.7 <DatiCassaPrevidenziale> <0.N>
         $DatiCassaPrevidenziale = $domtree->createElement( "DatiCassaPrevidenziale" );
 
             //2.1.1.7.1 <BolloVirtuale> * <1.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'TipoCassa', '' ) );
+            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'TipoCassa', $tipo_cassa ) );
 
             //2.1.1.7.2 <AlCassa> * <1.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'AlCassa', '' ) );
+            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'AlCassa', $aliquota_cassa ) );
 
             //2.1.1.7.3 <ImportoContributoCassa> * <1.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'ImportoContributoCassa', '' ) );
+            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'ImportoContributoCassa', $importo_cassa ) );
 
             //2.1.1.7.4 <ImponibileCassa> <0.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'ImponibileCassa', '' ) );
+            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'ImponibileCassa', $imponibile_cassa ) );
 
             //2.1.1.7.5 <AliquotaIVA> * <1.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'AliquotaIVA', '' ) );
+            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'AliquotaIVA', $aliq_iva_cassa ) );
 
-            //2.1.1.7.6 <Ritenuta> <0.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'Ritenuta', '' ) );
+            if( $applica_ritenuta ){
+                //2.1.1.7.6 <Ritenuta> <0.1>
+                $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'Ritenuta', 'SI' ) );
+            }
 
-            //2.1.1.7.7 <Natura> <0.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'Natura', '' ) );
+            if( $aliq_iva_cassa == 0 ){
+                //2.1.1.7.7 <Natura> <0.1>
+                $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'Natura', $natura_iva_cassa ) );
 
-            //2.1.1.7.8 <RiferimentoAmministrazione> <0.1>
-            $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'RiferimentoAmministrazione', '' ) );
+                //2.1.1.7.8 <RiferimentoAmministrazione> <0.1>
+                $DatiCassaPrevidenziale->appendChild($domtree->createElement( 'RiferimentoAmministrazione', '' ) );
+            }
 
         return $DatiCassaPrevidenziale;
 
     }
+    /* kpro@tom310120191640 end */
 
     function getScontoMaggiorazione(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
@@ -1516,6 +1590,35 @@ class InvoiceKp extends Invoice {
 
     }
 
+    /* kpro@tom310120191640 */
+    function getImportoTotaleDocumento($id){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false); 
+
+        $total_fattura = $focus_fattura->column_fields["hdnGrandTotal"];
+        $total_fattura = html_entity_decode(strip_tags($total_fattura), ENT_QUOTES, $default_charset);
+        
+        $importo_cassa = $focus_fattura->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == '' ){
+            $importo_cassa = 0;
+        }
+
+        $tot_iva_cassa = $focus_fattura->column_fields["kp_tot_iva_cassa"];
+        $tot_iva_cassa = html_entity_decode(strip_tags($tot_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $tot_iva_cassa == null || $tot_iva_cassa == '' ){
+            $tot_iva_cassa = 0;
+        }
+
+        $total_fattura = $total_fattura + $importo_cassa + $tot_iva_cassa;
+        
+        return $total_fattura;
+
+    }
+    /* kpro@tom310120191640 end */
+
     function getDatiGeneraliDocumento(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
 
@@ -1551,6 +1654,9 @@ class InvoiceKp extends Invoice {
         $hdnGrandTotal = html_entity_decode(strip_tags($hdnGrandTotal), ENT_QUOTES, $default_charset);
         $hdnGrandTotal = number_format($hdnGrandTotal, 2, ".", "");
 
+        $importo_totale_fattura = $this->getImportoTotaleDocumento($id);
+        $importo_totale_fattura = number_format($importo_totale_fattura, 2, ".", "");
+
         $txtAdjustment = $focus_fattura->column_fields["txtAdjustment"];
         $txtAdjustment = html_entity_decode(strip_tags($txtAdjustment), ENT_QUOTES, $default_charset);
         $txtAdjustment = trim($txtAdjustment);
@@ -1575,6 +1681,23 @@ class InvoiceKp extends Invoice {
             $importo_ritenuta = 0;
         }
         /* kpro@tom240120191400 end */
+
+        /* kpro@tom310120191640 */
+        $applica_cassa = $focus_fattura->column_fields["kp_applica_cassa"];
+        $applica_cassa = html_entity_decode(strip_tags($applica_cassa), ENT_QUOTES, $default_charset);
+        if( $applica_cassa == 'on' || $applica_cassa == '1' ){
+            $applica_cassa = true;
+        }
+        else{
+            $applica_cassa = false;
+        }
+
+        $importo_cassa = $focus_fattura->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == "" ){
+            $importo_cassa = 0;
+        }
+        /* kpro@tom310120191640 end */
 
         //2.1.1 <DatiGeneraliDocumento> * <1.1>
         $DatiGeneraliDocumento = $domtree->createElement( "DatiGeneraliDocumento" );
@@ -1601,14 +1724,18 @@ class InvoiceKp extends Invoice {
             //2.1.1.6 <DatiBollo> <0.1>
             //$DatiGeneraliDocumento->appendChild( $this->getDatiBollo($domtree, $id) );
 
-            //2.1.1.7 <DatiCassaPrevidenziale> <0.N>
-            //$DatiGeneraliDocumento->appendChild( $this->getCassaPrevidenziale($domtree, $id) );
+            /* kpro@tom310120191640 */
+            if( $applica_cassa && $importo_cassa != 0 ){
+                //2.1.1.7 <DatiCassaPrevidenziale> <0.N>
+                $DatiGeneraliDocumento->appendChild( $this->getCassaPrevidenziale($domtree, $id) );
+            }
+            /* kpro@tom310120191640 end */
 
             //2.1.1.8 <ScontoMaggiorazione> <0.N>
             //$DatiGeneraliDocumento->appendChild( $this->getScontoMaggiorazione($domtree, $id) );
 
             //2.1.1.9 <ImportoTotaleDocumento> <0.1>
-            $DatiGeneraliDocumento->appendChild($domtree->createElement( 'ImportoTotaleDocumento', $hdnGrandTotal ) );
+            $DatiGeneraliDocumento->appendChild($domtree->createElement( 'ImportoTotaleDocumento', $importo_totale_fattura ) );
 
             if( $txtAdjustment != null && $txtAdjustment != "" && $txtAdjustment != 0  && $txtAdjustment != 0.00 ){
                 //2.1.1.10 <Arrotondamento> <0.1>
@@ -2173,6 +2300,28 @@ class InvoiceKp extends Invoice {
     function getDatiBeniServizi(DOMDocument $domtree, $id){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        /* kpro@tom310120191640 */
+
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false); 
+
+        $applica_cassa = $focus_fattura->column_fields["kp_applica_cassa"];
+        $applica_cassa = html_entity_decode(strip_tags($applica_cassa), ENT_QUOTES, $default_charset);
+        if( $applica_cassa == 'on' || $applica_cassa == '1' ){
+            $applica_cassa = true;
+        }
+        else{
+            $applica_cassa = false;
+        }
+
+        $aliquota_cassa = $focus_fattura->column_fields["kp_aliq_iva_cassa"];
+        $aliquota_cassa = html_entity_decode(strip_tags($aliquota_cassa), ENT_QUOTES, $default_charset);
+        if( $aliquota_cassa == null && $aliquota_cassa == "" ){
+            $aliquota_cassa = 0;
+        }
+
+        /* kpro@tom310120191640 end */
+
         //2.2 <DatiBeniServizi> * <1.1>
         $DatiBeniServizi = $domtree->createElement( "DatiBeniServizi" );
 
@@ -2186,6 +2335,16 @@ class InvoiceKp extends Invoice {
             }
 
             $valori_dati_riepilogo = $this->getValoriDatiRiepilogoFattura($id);
+
+            /* kpro@tom310120191640 */
+
+            if( $applica_cassa && $aliquota_cassa != 0 ){
+
+                $valori_dati_riepilogo = $this->getValoriDatiRiepilogoFatturaConCassa($id, $valori_dati_riepilogo);
+
+            }
+
+            /* kpro@tom310120191640 end */
 
             foreach($valori_dati_riepilogo as $valore_dati_riepilogo){
 
@@ -2241,6 +2400,8 @@ class InvoiceKp extends Invoice {
         $bic = "";
 
         if( $this->esisteTabellaBanche() ){
+
+            $banca_pagamento = addslashes($banca_pagamento);
 
             $query = "SELECT 
                         nome_istituto,
@@ -2837,6 +2998,107 @@ class InvoiceKp extends Invoice {
         return $result;
 
     }
+
+    /* kpro@tom310120191640 */
+
+    function getValoriDatiRiepilogoFatturaConCassa($id, $valori_dati_riepilogo){
+        global $adb, $table_prefix, $current_user, $default_charset;
+
+        /*
+            Questa funzione cicla i $valori_dati_riepilogo e se trova un dato di riepilogo con la stessa tassazione della cassa allora aggiunge
+            anche l'iva della casa. Altrimenti aggiunge una riga con la tassazione della cassa.
+        */
+
+        $result = array();
+
+        $iva_cassa_applicata = false;
+
+        $focus_fattura = CRMEntity::getInstance('Invoice');
+        $focus_fattura->retrieve_entity_info($id, "Invoice", $dieOnError=false);
+
+        $importo_cassa = $focus_fattura->column_fields["kp_importo_cassa"];
+        $importo_cassa = html_entity_decode(strip_tags($importo_cassa), ENT_QUOTES, $default_charset);
+        if( $importo_cassa == null || $importo_cassa == "" ){
+            $importo_cassa = 0;
+        }
+        $importo_cassa = number_format($importo_cassa, 2, ".", "");
+
+        $tot_iva_cassa = $focus_fattura->column_fields["kp_tot_iva_cassa"];
+        $tot_iva_cassa = html_entity_decode(strip_tags($tot_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $tot_iva_cassa == null || $tot_iva_cassa == "" ){
+            $tot_iva_cassa = 0;
+        }
+        $tot_iva_cassa = number_format($tot_iva_cassa, 2, ".", "");
+
+        $aliq_iva_cassa = $focus_fattura->column_fields["kp_aliq_iva_cassa"];
+        $aliq_iva_cassa = html_entity_decode(strip_tags($aliq_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $aliq_iva_cassa == null || $aliq_iva_cassa == "" ){
+            $aliq_iva_cassa = 0;
+        }
+        $aliq_iva_cassa = number_format($aliq_iva_cassa, 2, ".", "");
+
+        $natura_iva_cassa = $focus_fattura->column_fields["kp_natura_iva_cassa"];
+        $natura_iva_cassa = html_entity_decode(strip_tags($natura_iva_cassa), ENT_QUOTES, $default_charset);
+        if( $natura_iva_cassa == null ){
+            $natura_iva_cassa = "";
+        }
+
+        $rif_amm_cassa = $focus_fattura->column_fields["kp_rif_amm_cassa"];
+        $rif_amm_cassa = html_entity_decode(strip_tags($rif_amm_cassa), ENT_QUOTES, $default_charset);
+        if( $rif_amm_cassa == null ){
+            $rif_amm_cassa = "";
+        }
+
+        
+
+        foreach($valori_dati_riepilogo as $tassa){
+
+            if( $aliq_iva_cassa != 0 && $aliq_iva_cassa == $tassa["aliquota_iva"] ){
+
+                $totale_imposta = $tassa["totale_imposta"] + $tot_iva_cassa;
+                $totale_imposta = number_format($totale_imposta, 2, ".", "");
+                $tassa['totale_imposta'] = number_format($totale_imposta, 2, ".", "");
+
+                $totale_imponibile = $tassa["totale_imponibile"] + $importo_cassa;
+                $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
+                $tassa['totale_imponibile'] = number_format($totale_imponibile, 2, ".", "");
+
+                $iva_cassa_applicata = true;
+
+            }
+            elseif( $aliq_iva_cassa == 0 && $aliq_iva_cassa == $tassa["aliquota_iva"] && $natura_iva_cassa == $tassa["natura"] ){
+
+                $totale_imposta = $tassa["totale_imposta"] + $tot_iva_cassa;
+                $totale_imposta = number_format($totale_imposta, 2, ".", "");
+                $tassa['totale_imposta'] = number_format($totale_imposta, 2, ".", "");
+
+                $totale_imponibile = $tassa["totale_imponibile"] + $importo_cassa;
+                $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
+                $tassa['totale_imponibile'] = number_format($totale_imponibile, 2, ".", "");
+
+                $iva_cassa_applicata = true;
+
+            }
+
+            $result[] = $tassa;
+
+        }
+
+        if( !$iva_cassa_applicata ){
+
+            $result[] = array("aliquota_iva" => $aliq_iva_cassa,
+                                "totale_imponibile" => $importo_cassa,
+                                "totale_imposta" => $tot_iva_cassa,
+                                "natura" => $natura_iva_cassa,
+                                "normativa" => $rif_amm_cassa);
+
+        }
+
+        return $result;
+
+    }
+
+    /* kpro@tom310120191640 end */
 
     function getScadenzeFattura($id){
         global $adb, $table_prefix, $current_user, $default_charset;
