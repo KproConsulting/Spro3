@@ -975,6 +975,7 @@ PRE-INSERIMENTO: subtotal  ".$subtotal.", total = ".$total.", adjustment = ".$ad
         //$description = preg_replace( "/\r/", " ", $description );
         //$description = preg_replace( "/<br>/", " ", $description );
         $description = addslashes($description);
+        $commento_riga_fattura = addslashes($commento_riga_fattura);
 
         if($discount_percent > 0){
             //kpro@tom010220191210
