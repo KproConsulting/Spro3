@@ -65,7 +65,6 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
     $q_sales_order = "SELECT 
 						so.salesorder_no salesorder_no,
 						so.accountid accountid,
-						so.kp_agente kp_agente,
 						so.data_ordine data_ordine,
 						so.kp_conto_corrente kp_conto_corrente,
 						so.kp_banca_cliente kp_banca_cliente,
@@ -75,6 +74,9 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 						so.kp_business_unit businessunit,
 						so.commessa commessa,
 						so.kp_rif_ordine_cli kp_rif_ordine_cli,
+						so.kp_data_ord_cli kp_data_ord_cli,
+						so.kp_codice_cup kp_codice_cup,
+						so.kp_codice_cig kp_codice_cig,
 						acc.accountname accountname,
 						sol.kp_soggetto subject_riga,
 						sol.kp_prodotto kp_prodotto,
@@ -85,7 +87,11 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 						sol.kp_listprice kp_listprice,
 						sol.kp_salesorder kp_salesorder,
 						sol.kp_val_no_sconto kp_val_no_sconto,
-						sol.description descrizione_riga
+						sol.description descrizione_riga,
+						sol.kp_commento_riga commento_riga,
+						sol.kp_agente kp_agente,
+						sol.kp_id_tassa kp_id_tassa,
+						sol.kp_nome_tassa kp_nome_tassa
 						FROM {$table_prefix}_salesorder so
 						INNER JOIN {$table_prefix}_salesordercf socf ON socf.salesorderid = so.salesorderid
 						INNER JOIN {$table_prefix}_kpsalesorderline sol ON sol.kp_salesorder = so.salesorderid
@@ -110,6 +116,24 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 
 		$rif_ordine_cli = $adb->query_result($res_sales_order, 0, 'kp_rif_ordine_cli');
 		$rif_ordine_cli = html_entity_decode(strip_tags($rif_ordine_cli), ENT_QUOTES,$default_charset);
+
+		$data_ordine_cliente = $adb->query_result($res_sales_order, 0, 'kp_data_ord_cli');
+		$data_ordine_cliente = html_entity_decode(strip_tags($data_ordine_cliente), ENT_QUOTES, $default_charset);
+		if( $data_ordine_cliente == null || $data_ordine_cliente == '0000-00-00' ){
+			$data_ordine_cliente = "";
+		}
+
+		$codice_cup = $adb->query_result($res_sales_order, 0, 'kp_codice_cup');
+		$codice_cup = html_entity_decode(strip_tags($codice_cup), ENT_QUOTES, $default_charset);
+		if( $codice_cup == null ){
+			$codice_cup = "";
+		}
+
+		$codice_cig = $adb->query_result($res_sales_order, 0, 'kp_codice_cig');
+		$codice_cig = html_entity_decode(strip_tags($codice_cig), ENT_QUOTES, $default_charset);
+		if( $codice_cig == null ){
+			$codice_cig = "";
+		}
 		
 		$assegnatario = $adb->query_result($res_sales_order, 0, 'assegnatario');
 		$assegnatario = html_entity_decode(strip_tags($assegnatario), ENT_QUOTES,$default_charset);
@@ -207,12 +231,33 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 		if($banca_cliente == null || $banca_cliente == ""){
 			$banca_cliente = "";
 		}
+		/* kpro@bid250920181215 */
+		$commento_riga = $adb->query_result($res_sales_order, 0, 'commento_riga');
+		$commento_riga = html_entity_decode(strip_tags($commento_riga), ENT_QUOTES,$default_charset);
+		if($commento_riga == null){
+			$commento_riga = '';
+		}
+		/* kpro@bid250920181215 end */
 		
 		//$per_sconto = 100 - ( ($valore * 100) / $valore_riga );
 
 		$prezzo_totale = ($valore * $val_no_sconto) / $valore_riga;
 		
 		$prezzo_unitario = $prezzo_totale / $quantita_ordine;
+
+		/* kpro@tom101220181102 */
+		$id_tassa = $adb->query_result($res_sales_order, 0, 'kp_id_tassa');
+		$id_tassa = html_entity_decode(strip_tags($id_tassa), ENT_QUOTES,$default_charset);
+		if($id_tassa == null || $id_tassa == ""){
+			$id_tassa = "";
+		}
+
+		$nome_tassa = $adb->query_result($res_sales_order, 0, 'kp_nome_tassa');
+		$nome_tassa = html_entity_decode(strip_tags($nome_tassa), ENT_QUOTES,$default_charset);
+		if($nome_tassa == null || $nome_tassa == ""){
+			$nome_tassa = "";
+		}
+		/* kpro@tom101220181102 end */
 		
 	}
 	
@@ -269,6 +314,22 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 		$odf->column_fields['kp_salesorder'] = $ordine;
 	}
 	$odf->column_fields['kp_banca_cliente'] = $banca_cliente;
+	$odf->column_fields['comment_line'] = $commento_riga; /* kpro@bid250920181215 */
+
+	/* kpro@tom031221081534 */
+	$odf->column_fields['kp_rif_ordine_cli'] = $rif_ordine_cli; 
+	if( $data_ordine_cliente != "" ){
+		$odf->column_fields['kp_data_ord_cli'] = $data_ordine_cliente;
+	}
+	$odf->column_fields['kp_codice_cup'] = $codice_cup;
+	$odf->column_fields['kp_codice_cig'] = $codice_cig;
+	/* kpro@tom031221081534 end */
+
+	/* kpro@tom101220181102 */
+	$odf->column_fields['kp_id_tassa'] = $id_tassa;
+	$odf->column_fields['kp_nome_tassa'] = $nome_tassa;
+	/* kpro@tom101220181102 end */
+
 	$odf->save('OdF', $longdesc=true, $offline_update=false, $triggerEvent=false); 
 	$odfid = $odf->id;
 	
