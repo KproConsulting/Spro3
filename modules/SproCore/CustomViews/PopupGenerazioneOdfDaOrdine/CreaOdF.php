@@ -97,11 +97,8 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 						INNER JOIN {$table_prefix}_kpsalesorderline sol ON sol.kp_salesorder = so.salesorderid
 						INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = so.salesorderid
 						INNER JOIN {$table_prefix}_crmentity ent2 ON ent2.crmid = sol.kpsalesorderlineid
-						INNER JOIN {$table_prefix}_crmentity ent3 ON ent3.crmid = sol.kp_prodotto
 						LEFT JOIN {$table_prefix}_account acc ON acc.accountid = so.accountid
-						WHERE sol.kpsalesorderlineid = ".$salesorderlineid;
-					
-	$q_sales_order .= " AND ent3.setype = 'Services'";
+						WHERE sol.kpsalesorderlineid = ".$salesorderlineid; /* kpro@bid250920181215 */
 
 	$res_sales_order = $adb->query($q_sales_order); 							
 	if($adb->num_rows($res_sales_order)>0){		
