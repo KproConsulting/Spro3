@@ -64,7 +64,10 @@ if(isset($_GET['record'])){
                             INNER JOIN {$table_prefix}_crmentity ent2 ON ent2.crmid = sol.kp_prodotto
                             WHERE ent.deleted = 0 AND sol.kp_salesorder = ".$record;
 
-    $q_lista_prodotti .= " AND ent2.setype = 'Services'";
+    /* kproc@tom210220191006 */
+    //$q_lista_prodotti .= " AND ent2.setype = 'Services'";
+    /* kproc@tom210220191006 end */
+    
     $q_lista_prodotti .= " ORDER BY sol.kp_numero_riga ASC";
 
     $res_lista_prodotti = $adb->query($q_lista_prodotti);
