@@ -3581,9 +3581,11 @@ class InvoiceKp extends Invoice {
             else{
 
                 $tassa_calcolata = ( intval($percentage) * $total_notaxes ) / 100;
-                $tassa_calcolata_arrotondata = round($tassa_calcolata, 2);
+                $tassa_calcolata_arrotondata = round($tassa_calcolata, 0);
 
-                $tassa_totale_arrotondata = round($tax_total, 2);
+                $tassa_totale_arrotondata = round($tax_total, 0);
+
+                //print_r("<br />tassa_totale_arrotondata: ".$tassa_totale_arrotondata." vs tassa_calcolata_arrotondata".$tassa_calcolata_arrotondata);
 
                 if( $tassa_calcolata_arrotondata != $tassa_totale_arrotondata ){
 
