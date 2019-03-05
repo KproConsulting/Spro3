@@ -1243,7 +1243,7 @@ class InvoiceKp extends Invoice {
         if( $importo_ritenuta == null || $importo_ritenuta == "" ){
             $importo_ritenuta = 0;
         }
-        $importo_ritenuta = number_format($importo_ritenuta, 2, ".", "");
+        $importo_ritenuta = number_format($importo_ritenuta, 4, ".", ""); //kpro@tom040320191010
 
         //2.1.1.5 <DatiRitenuta> <0.1>
         $DatiRitenuta = $domtree->createElement( "DatiRitenuta" );
@@ -1312,14 +1312,14 @@ class InvoiceKp extends Invoice {
         if( $importo_cassa == null || $importo_cassa == "" ){
             $importo_cassa = 0;
         }
-        $importo_cassa = number_format($importo_cassa, 2, ".", "");
+        $importo_cassa = number_format($importo_cassa, 4, ".", ""); //kpro@tom040320191010
 
         $imponibile_cassa = $focus_fattura->column_fields["kp_imponibile_cassa"];
         $imponibile_cassa = html_entity_decode(strip_tags($imponibile_cassa), ENT_QUOTES, $default_charset);
         if( $imponibile_cassa == null || $imponibile_cassa == "" ){
             $imponibile_cassa = 0;
         }
-        $imponibile_cassa = number_format($imponibile_cassa, 2, ".", "");
+        $imponibile_cassa = number_format($imponibile_cassa, 4, ".", ""); //kpro@tom040320191010
 
         $applica_ritenuta = $focus_fattura->column_fields["kp_applica_ritenuta"];
         $applica_ritenuta = html_entity_decode(strip_tags($applica_ritenuta), ENT_QUOTES, $default_charset);
@@ -1652,10 +1652,10 @@ class InvoiceKp extends Invoice {
 
         $hdnGrandTotal = $focus_fattura->column_fields["hdnGrandTotal"];
         $hdnGrandTotal = html_entity_decode(strip_tags($hdnGrandTotal), ENT_QUOTES, $default_charset);
-        $hdnGrandTotal = number_format($hdnGrandTotal, 2, ".", "");
+        $hdnGrandTotal = number_format($hdnGrandTotal, 4, ".", ""); //kpro@tom040320191010
 
         $importo_totale_fattura = $this->getImportoTotaleDocumento($id);
-        $importo_totale_fattura = number_format($importo_totale_fattura, 2, ".", "");
+        $importo_totale_fattura = number_format($importo_totale_fattura, 4, ".", ""); //kpro@tom040320191010
 
         $txtAdjustment = $focus_fattura->column_fields["txtAdjustment"];
         $txtAdjustment = html_entity_decode(strip_tags($txtAdjustment), ENT_QUOTES, $default_charset);
@@ -1663,7 +1663,7 @@ class InvoiceKp extends Invoice {
         if( $txtAdjustment == null || $txtAdjustment == "" ){
             $txtAdjustment = 0;
         }
-        $txtAdjustment = number_format($txtAdjustment, 2, ".", "");
+        $txtAdjustment = number_format($txtAdjustment, 4, ".", ""); //kpro@tom040320191010
 
         /* kpro@tom240120191400 */
         $applica_ritenuta = $focus_fattura->column_fields["kp_applica_ritenuta"];
@@ -2724,18 +2724,18 @@ class InvoiceKp extends Invoice {
             if( $discount_percent == null || $discount_percent == 0 ){
                 $discount_percent = 0;
             }
-            $discount_percent = number_format($discount_percent, 2, ".", "");
+            $discount_percent = number_format($discount_percent, 4, ".", ""); //kpro@tom040320191010
 
             $discount_amount = $adb->query_result($result_query, $i, 'discount_amount');
             $discount_amount = html_entity_decode(strip_tags($discount_amount), ENT_QUOTES, $default_charset);
             if( $discount_amount == null || $discount_amount == 0 ){
                 $discount_amount = 0;
             }
-            $discount_amount = number_format($discount_amount, 2, ".", "");
+            $discount_amount = number_format($discount_amount, 4, ".", ""); //kpro@tom040320191010
 
             $total_notaxes = $adb->query_result($result_query, $i, 'total_notaxes');
             $total_notaxes = html_entity_decode(strip_tags($total_notaxes), ENT_QUOTES, $default_charset);
-            $total_notaxes = number_format($total_notaxes, 2, ".", "");
+            $total_notaxes = number_format($total_notaxes, 4, ".", ""); //kpro@tom040320191010
 
             $comment = $adb->query_result($result_query, $i, 'comment');
             $comment = html_entity_decode(strip_tags($comment), ENT_QUOTES, $default_charset);
@@ -2749,11 +2749,11 @@ class InvoiceKp extends Invoice {
 
             $linetotal = $adb->query_result($result_query, $i, 'linetotal');
             $linetotal = html_entity_decode(strip_tags($linetotal), ENT_QUOTES, $default_charset);
-            $linetotal = number_format($linetotal, 2, ".", "");
+            $linetotal = number_format($linetotal, 4, ".", ""); //kpro@tom040320191010
 
             $tax_total = $adb->query_result($result_query, $i, 'tax_total');
             $tax_total = html_entity_decode(strip_tags($tax_total), ENT_QUOTES, $default_charset);
-            $tax_total = number_format($tax_total, 2, ".", "");
+            $tax_total = number_format($tax_total, 4, ".", ""); //kpro@tom040320191010
 
             $tax1 = $adb->query_result($result_query, $i, 'tax1');
             $tax1 = html_entity_decode(strip_tags($tax1), ENT_QUOTES, $default_charset);
@@ -2831,7 +2831,7 @@ class InvoiceKp extends Invoice {
             if( $percentage == "" ){
                 $percentage = 0;
             }
-            $percentage = number_format($percentage, 2, ".", "");
+            $percentage = number_format($percentage, 4, ".", ""); //kpro@tom040320191010
 
             $natura = $adb->query_result($result_query, $i, 'natura');
             $natura = html_entity_decode(strip_tags($natura), ENT_QUOTES, $default_charset);
@@ -2922,7 +2922,7 @@ class InvoiceKp extends Invoice {
             if( $total_notaxes == null || $total_notaxes == 0 ){
                 $total_notaxes = 0;
             }
-            $total_notaxes = number_format($total_notaxes, 2, ".", "");
+            $total_notaxes = number_format($total_notaxes, 4, ".", ""); //kpro@tom040320191010
 
             $tax1 = $adb->query_result($result_query, $i, 'tax1');
             $tax1 = html_entity_decode(strip_tags($tax1), ENT_QUOTES, $default_charset);
@@ -2935,14 +2935,14 @@ class InvoiceKp extends Invoice {
             if( $tax_total == null || $tax_total == '' ){
                 $tax_total = 0;
             }
-            $tax_total = number_format($tax_total, 2, ".", "");
+            $tax_total = number_format($tax_total, 4, ".", ""); //kpro@tom040320191010
 
             $linetotal = $adb->query_result($result_query, $i, 'linetotal');
             $linetotal = html_entity_decode(strip_tags($linetotal), ENT_QUOTES, $default_charset);
             if( $linetotal == null || $linetotal == '' ){
                 $linetotal = 0;
             }
-            $linetotal = number_format($linetotal, 2, ".", "");
+            $linetotal = number_format($linetotal, 4, ".", ""); //kpro@tom040320191010
 
             $id_tassa = $adb->query_result($result_query, $i, 'id_tassa');
             $id_tassa = html_entity_decode(strip_tags($id_tassa), ENT_QUOTES, $default_charset);
@@ -2973,7 +2973,7 @@ class InvoiceKp extends Invoice {
             $totale_imposta = 0;
 
             $tax1 = number_format($tax1, 2, ".", "");
-            $percentage = number_format($percentage, 2, ".", "");
+            $percentage = number_format($percentage, 4, ".", ""); //kpro@tom040320191010
 
             if( array_key_exists($id_tassa, $result) ) {
                 $totale_imponibile = $result[$id_tassa]["totale_imponibile"] + $total_notaxes;
@@ -2984,8 +2984,8 @@ class InvoiceKp extends Invoice {
                 $totale_imposta = $tax_total;
             }
 
-            $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
-            $totale_imposta = number_format($totale_imposta, 2, ".", "");
+            $totale_imponibile = number_format($totale_imponibile, 4, ".", ""); //kpro@tom040320191010
+            $totale_imposta = number_format($totale_imposta, 4, ".", ""); //kpro@tom040320191010
 
             $result[$id_tassa] = array("aliquota_iva" => $tax1,
                                         "totale_imponibile" => $totale_imponibile,
@@ -3021,21 +3021,21 @@ class InvoiceKp extends Invoice {
         if( $importo_cassa == null || $importo_cassa == "" ){
             $importo_cassa = 0;
         }
-        $importo_cassa = number_format($importo_cassa, 2, ".", "");
+        $importo_cassa = number_format($importo_cassa, 4, ".", ""); //kpro@tom040320191010
 
         $tot_iva_cassa = $focus_fattura->column_fields["kp_tot_iva_cassa"];
         $tot_iva_cassa = html_entity_decode(strip_tags($tot_iva_cassa), ENT_QUOTES, $default_charset);
         if( $tot_iva_cassa == null || $tot_iva_cassa == "" ){
             $tot_iva_cassa = 0;
         }
-        $tot_iva_cassa = number_format($tot_iva_cassa, 2, ".", "");
+        $tot_iva_cassa = number_format($tot_iva_cassa, 4, ".", ""); //kpro@tom040320191010
 
         $aliq_iva_cassa = $focus_fattura->column_fields["kp_aliq_iva_cassa"];
         $aliq_iva_cassa = html_entity_decode(strip_tags($aliq_iva_cassa), ENT_QUOTES, $default_charset);
         if( $aliq_iva_cassa == null || $aliq_iva_cassa == "" ){
             $aliq_iva_cassa = 0;
         }
-        $aliq_iva_cassa = number_format($aliq_iva_cassa, 2, ".", "");
+        $aliq_iva_cassa = number_format($aliq_iva_cassa, 2, ".", ""); 
 
         $natura_iva_cassa = $focus_fattura->column_fields["kp_natura_iva_cassa"];
         $natura_iva_cassa = html_entity_decode(strip_tags($natura_iva_cassa), ENT_QUOTES, $default_charset);
@@ -3056,12 +3056,12 @@ class InvoiceKp extends Invoice {
             if( $aliq_iva_cassa != 0 && $aliq_iva_cassa == $tassa["aliquota_iva"] ){
 
                 $totale_imposta = $tassa["totale_imposta"] + $tot_iva_cassa;
-                $totale_imposta = number_format($totale_imposta, 2, ".", "");
-                $tassa['totale_imposta'] = number_format($totale_imposta, 2, ".", "");
+                $totale_imposta = number_format($totale_imposta, 4, ".", ""); //kpro@tom040320191010
+                $tassa['totale_imposta'] = number_format($totale_imposta, 4, ".", ""); //kpro@tom040320191010
 
                 $totale_imponibile = $tassa["totale_imponibile"] + $importo_cassa;
-                $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
-                $tassa['totale_imponibile'] = number_format($totale_imponibile, 2, ".", "");
+                $totale_imponibile = number_format($totale_imponibile, 4, ".", ""); //kpro@tom040320191010
+                $tassa['totale_imponibile'] = number_format($totale_imponibile, 4, ".", ""); //kpro@tom040320191010
 
                 $iva_cassa_applicata = true;
 
@@ -3069,12 +3069,12 @@ class InvoiceKp extends Invoice {
             elseif( $aliq_iva_cassa == 0 && $aliq_iva_cassa == $tassa["aliquota_iva"] && $natura_iva_cassa == $tassa["natura"] ){
 
                 $totale_imposta = $tassa["totale_imposta"] + $tot_iva_cassa;
-                $totale_imposta = number_format($totale_imposta, 2, ".", "");
-                $tassa['totale_imposta'] = number_format($totale_imposta, 2, ".", "");
+                $totale_imposta = number_format($totale_imposta, 4, ".", ""); //kpro@tom040320191010
+                $tassa['totale_imposta'] = number_format($totale_imposta, 4, ".", ""); //kpro@tom040320191010
 
                 $totale_imponibile = $tassa["totale_imponibile"] + $importo_cassa;
-                $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
-                $tassa['totale_imponibile'] = number_format($totale_imponibile, 2, ".", "");
+                $totale_imponibile = number_format($totale_imponibile, 4, ".", ""); //kpro@tom040320191010
+                $tassa['totale_imponibile'] = number_format($totale_imponibile, 4, ".", ""); //kpro@tom040320191010
 
                 $iva_cassa_applicata = true;
 
