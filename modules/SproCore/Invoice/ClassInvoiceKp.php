@@ -2831,7 +2831,7 @@ class InvoiceKp extends Invoice {
             if( $percentage == "" ){
                 $percentage = 0;
             }
-            $percentage = number_format($percentage, 4, ".", ""); //kpro@tom040320191010
+            $percentage = number_format($percentage, 2, ".", "");
 
             $natura = $adb->query_result($result_query, $i, 'natura');
             $natura = html_entity_decode(strip_tags($natura), ENT_QUOTES, $default_charset);
