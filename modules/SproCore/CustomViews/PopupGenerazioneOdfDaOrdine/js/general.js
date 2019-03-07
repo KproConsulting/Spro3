@@ -445,17 +445,21 @@ function check() {
         var valore_fatturato = prodotto[check_esaminato].valore_fatturato;
         valore_fatturato = parseFloat(valore_fatturato);
         valore_fatturato = valore_fatturato.toFixed(2);
+        valore_fatturato = parseFloat(valore_fatturato);
 
         var valore_riga = prodotto[check_esaminato].valore_riga;
         valore_riga = parseFloat(valore_riga);
         valore_riga = valore_riga.toFixed(2);
+        valore_riga = parseFloat(valore_riga);
 
         var valore_da_fatturare = jQuery("#val_" + check_esaminato).val();
         valore_da_fatturare = parseFloat(valore_da_fatturare);
         valore_da_fatturare = valore_da_fatturare.toFixed(2);
+        valore_da_fatturare = parseFloat(valore_da_fatturare);
 
         var residuo = valore_riga - valore_fatturato;
         residuo = residuo.toFixed(2);
+        residuo = parseFloat(residuo);
         /* kpro@tom070320190925 end */
 
         if(prodotto[check_esaminato].val_no_sconto >= 0){ /* kpro@bid250920181215 */
