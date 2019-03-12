@@ -181,7 +181,7 @@ function generaTicketDaSalesOrder($salesorder_id){
             
             $handler = $adb->query_result($res_righe_ordine,$i,'handler');
             $handler = html_entity_decode(strip_tags($handler), ENT_QUOTES,$default_charset);
-            if( $handler  == null || $handler  == "" ){
+            if( $handler == null || $handler == "" ){
                 $handler = 1;
             }
 
