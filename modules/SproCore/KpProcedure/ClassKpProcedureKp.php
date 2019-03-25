@@ -966,6 +966,11 @@ class KpProcedureKp extends KpProcedure {
 
                             $focus = CRMEntity::getInstance('KpEntitaProcedure');
                             $focus->retrieve_entity_info($verifica_esistenza_elemento["id"], "KpEntitaProcedure");
+
+                            foreach($focus->column_fields as $fieldname => $value) {
+                                $focus->column_fields[$fieldname] = decode_html($value);
+                            }
+
                             $focus->column_fields['kp_nome_entita'] = $element["nome"];
                             $focus->column_fields['kp_tipo_entita_bpmn'] = $element["type"]; 
                             $focus->column_fields['kp_order'] = $order; 
@@ -3150,6 +3155,11 @@ class KpProcedureKp extends KpProcedure {
 
         $focus = CRMEntity::getInstance('KpEntitaProcedure');
         $focus->retrieve_entity_info($elemento_id, "KpEntitaProcedure");
+
+        foreach($focus->column_fields as $fieldname => $value) {
+            $focus->column_fields[$fieldname] = decode_html($value);
+        }
+
         $focus->column_fields['kp_relazionato_a_id'] = $processo_id;
         $focus->column_fields['kp_aggiornato'] = '1'; 
         $focus->mode = 'edit';
@@ -3163,6 +3173,11 @@ class KpProcedureKp extends KpProcedure {
 
         $focus = CRMEntity::getInstance('KpEntitaProcedure');
         $focus->retrieve_entity_info($elemento_id, "KpEntitaProcedure");
+
+        foreach($focus->column_fields as $fieldname => $value) {
+            $focus->column_fields[$fieldname] = decode_html($value);
+        }
+
         $focus->column_fields['kp_relazionato_a_id'] = "";
         $focus->column_fields['kp_aggiornato'] = '1'; 
         $focus->mode = 'edit';
