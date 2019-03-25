@@ -100,6 +100,8 @@ class InvoiceKp extends Invoice {
     function setCassa(){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $this->retrieve_entity_info($this->id, "Invoice");
+
         $total_imponibile = $this->getImponibileFattura();
 
         $applica_cassa = $this->column_fields["kp_applica_cassa"];
@@ -176,6 +178,8 @@ class InvoiceKp extends Invoice {
     function setRitenuta(){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $this->retrieve_entity_info($this->id, "Invoice");
+
         $total_imponibile = $this->getImponibileFattura();
 
         $applica_ritenuta = $this->column_fields["kp_applica_ritenuta"];
@@ -210,6 +214,8 @@ class InvoiceKp extends Invoice {
 
     function setImponibileFattura(){
         global $adb, $table_prefix, $current_user, $default_charset;
+
+        $this->retrieve_entity_info($this->id, "Invoice");
 
         $total_imponibile = $this->getImponibileFattura();
 
@@ -284,6 +290,8 @@ class InvoiceKp extends Invoice {
     function setTotaleFattura(){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $this->retrieve_entity_info($this->id, "Invoice");
+
         $total_fattura = $this->getTotaleFattura();
 
         /* kpro@tom310120191640 */
@@ -309,6 +317,8 @@ class InvoiceKp extends Invoice {
     function getTotaleFattura(){
         global $adb, $table_prefix, $current_user, $default_charset;
 
+        $this->retrieve_entity_info($this->id, "Invoice");
+
         /* kpro@tom310120191640 */
         $total_fattura = $this->getImportoTotaleDocumento($this->id);
         /* kpro@tom310120191640 end */
@@ -328,6 +338,8 @@ class InvoiceKp extends Invoice {
 
     function getTotaleTasseFattura($where = "tax.percentage > 0"){
         global $adb, $table_prefix, $current_user, $default_charset;
+
+        $this->retrieve_entity_info($this->id, "Invoice");
 
         $total_tasse = 0;
 
