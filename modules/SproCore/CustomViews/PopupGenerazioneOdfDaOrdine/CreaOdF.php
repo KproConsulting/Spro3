@@ -12,7 +12,7 @@ chdir($root_directory);
 require_once('include/utils/utils.php');
 include_once('vtlib/Vtiger/Module.php');
 $Vtiger_Utils_Log = true;
-global $adb, $table_prefix, $current_user, $site_URL;
+global $adb, $table_prefix, $current_user, $site_URL, $default_charset;
 session_start();
 
 require_once('modules/SproCore/KpSalesOrderLine/ClassKpSalesOrderLineKp.php');
@@ -294,7 +294,7 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 	$odf->column_fields['discount_percent'] = $per_sconto;
 	$odf->column_fields['discount_amount'] = $amm_sconto;
 	$odf->column_fields['assigned_user_id'] = $assegnatario;
-	$odf->column_fields['description'] = utf8_encode($descrizione_riga);
+	$odf->column_fields['description'] = $descrizione_riga;
 	if($agente != 0){
 		$odf->column_fields['kp_agente'] = $agente;
 	}
@@ -326,6 +326,10 @@ if(isset($_GET['ordine']) && isset($_GET['prodotto']) && isset($_GET['amm_sconto
 	$odf->column_fields['kp_id_tassa'] = $id_tassa;
 	$odf->column_fields['kp_nome_tassa'] = $nome_tassa;
 	/* kpro@tom101220181102 end */
+
+	foreach($odf->column_fields as $fieldname => $value) {
+		$odf->column_fields[$fieldname] = decode_html($value);	//Pulisco i caratteri HTML
+	}
 
 	$odf->save('OdF', $longdesc=true, $offline_update=false, $triggerEvent=false); 
 	$odfid = $odf->id;
