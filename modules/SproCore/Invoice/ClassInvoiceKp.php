@@ -2458,6 +2458,16 @@ class InvoiceKp extends Invoice {
 
         }
 
+        if( $iban == "" || $abi == "" || $cab == "" ){
+
+            $nome_istituto = "";
+            $iban = "";
+            $abi = "";
+            $cab = "";
+            $bic = "";
+
+        }
+
         $result = array("nome_istituto" => $nome_istituto,
                         "iban" => $iban,
                         "abi" => $abi,
@@ -2547,22 +2557,22 @@ class InvoiceKp extends Invoice {
                 $DettaglioPagamento->appendChild($domtree->createElement( 'IstitutoFinanziario', $dati_banca_pagamento["nome_istituto"] ) );
             }
 
-            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["iban"] ){
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["iban"] != "" ){
                 //2.4.2.13 <IBAN> <0.1>
                 $DettaglioPagamento->appendChild($domtree->createElement( 'IBAN', $dati_banca_pagamento["iban"] ) );
             }
 
-            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["abi"] ){
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["abi"] != "" ){
                 //2.4.2.14 <ABI> <0.1>
                 $DettaglioPagamento->appendChild($domtree->createElement( 'ABI', $dati_banca_pagamento["abi"] ) );
             }
 
-            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["cab"] ){
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["cab"] != "" ){
                 //2.4.2.15 <CAB> <0.1>
                 $DettaglioPagamento->appendChild($domtree->createElement( 'CAB', $dati_banca_pagamento["cab"] ) );
             }
 
-            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["bic"] ){
+            if( $dati_banca_pagamento["nome_istituto"] != "" && $dati_banca_pagamento["bic"] != "" ){
                 //2.4.2.16 <BIC> <0.1>
                 $DettaglioPagamento->appendChild($domtree->createElement( 'BIC', $dati_banca_pagamento["bic"] ) );
             }
