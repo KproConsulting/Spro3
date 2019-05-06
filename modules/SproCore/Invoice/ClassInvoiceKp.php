@@ -84,14 +84,35 @@ class InvoiceKp extends Invoice {
 
         }
 
-        if($this->column_fields['mod_pagamento'] != '' && $this->column_fields['mod_pagamento'] != null && $this->column_fields['mod_pagamento'] != 0 
-        && ($this->column_fields['kp_tipo_documento'] == 'Fattura' || $this->column_fields['kp_tipo_documento'] == 'Fattura di acconto')
-        && (($avviso_fattura && ($this->column_fields['invoicestatus'] == 'Approvata Proforma' || $this->column_fields['invoicestatus'] == 'Spedita Proforma'))
-        || (!$avviso_fattura && ($this->column_fields['invoicestatus'] == 'Approved' || $this->column_fields['invoicestatus'] == 'Sent')))){ /* kpro@bid250920181215 */
-        
-            generaScadenzeFattura($this->id);
+        //file_put_contents( __DIR__."/kp_log.txt", print_r($this->column_fields, true), FILE_APPEND | LOCK_EX );
+
+        if( $this->column_fields['mod_pagamento'] != '' && $this->column_fields['mod_pagamento'] != null && $this->column_fields['mod_pagamento'] != 0 ){
+
+            if( $this->column_fields['kp_tipo_documento'] == 'Fattura' || $this->column_fields['kp_tipo_documento'] == 'Fattura di acconto' ){
+
+                /*if( $avviso_fattura ){
+                    file_put_contents( __DIR__."/kp_log.txt", "\nAvviso Fattura", FILE_APPEND | LOCK_EX );
+                }
+                else{
+                    file_put_contents( __DIR__."/kp_log.txt", "\nNON Avviso Fattura", FILE_APPEND | LOCK_EX );
+                }*/
+
+                if( $avviso_fattura && ($this->column_fields['invoicestatus'] == 'Approvata Proforma' || $this->column_fields['invoicestatus'] == 'Spedita Proforma') ){
+
+                    generaScadenzeFattura($this->id);
+
+                }
+                elseif( !$avviso_fattura && ($this->column_fields['invoicestatus'] == 'Approved' || $this->column_fields['invoicestatus'] == 'Sent') ){
+
+                    generaScadenzeFattura($this->id);
+
+                }
+
+            }
 
         }
+
+        
 
     }
 
@@ -2191,8 +2212,13 @@ class InvoiceKp extends Invoice {
                     //2.2.1.10.1 <Tipo> * <1.1>
                     $ScontoMaggiorazione->appendChild($domtree->createElement( 'Tipo', 'SC' ) );
 
+                    /* kpro@tom060520191636 */
+                    $ammontare_sconto = $linea["discount_amount"] / $linea["quantity"];
+                    $ammontare_sconto = number_format($ammontare_sconto, 2, ".", "");
+
                     //2.2.1.10.3 <Importo> <0.1>
-                    $ScontoMaggiorazione->appendChild($domtree->createElement( 'Importo', $linea["discount_amount"] ) );
+                    $ScontoMaggiorazione->appendChild($domtree->createElement( 'Importo', $ammontare_sconto ) );
+                    /* kpro@tom060520191636 end*/
 
             }
 
