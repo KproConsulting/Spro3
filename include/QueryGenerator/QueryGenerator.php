@@ -1138,6 +1138,7 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 			if(!is_array($valueSqlList)) {
 				$valueSqlList = array($valueSqlList);
 			}
+			
 			foreach ($valueSqlList as $valueSql) {
 				//crmv@103450 crmv@126096
 				if ($this->module == 'Processes' && $fieldName == 'process_actor') {
@@ -1227,6 +1228,7 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 					$fieldSql .= "$fieldGlue {$table_prefix}_mailscanner.scannername ".$valueSql;
 				//crmv@129272e
 				} else {
+					
 					if(($fieldName == 'birthday' || strtolower($conditionInfo['operator']) == 'between_monthday') && !$this->isRelativeSearchOperators(
 							$conditionInfo['operator'])) {
 
@@ -1239,6 +1241,7 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 						//crmv@36534 crmv@26565 crmv@56982
 						$casttype = $this->getCastValue($field);
 						if ($casttype !==false){
+							
 							// crmv@149399
 							$casttype = strtoupper($casttype);
 							$fieldTable = $field->getTableName();
@@ -1251,6 +1254,15 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 							}*/
 							/* kpro@tom080420191118 end */
 
+							/* kpro@tom080420191118 */
+							//Correzione di CRMVillage
+							$fieldTabId = $field->getTabId(); // crmv@174171
+							if (strpos($valueSql, ':') !== false && ($fieldName == 'date_start' || $fieldName == 'due_date') && in_array($fieldTabId,array(9,16))) { // crmv@174171
+								$fieldColumn = ($fieldName == 'date_start' ? 'activity_start' : 'activity_end');
+								$casttype = 'DATETIME';
+							}
+							/* kpro@tom080420191118 end */
+							
 							if ($casttype == 'DATE' || $casttype == 'DATETIME') {
 								$fieldSql .= "$fieldGlue COALESCE(".$fieldTable.'.'.$fieldColumn.", cast('' as ".$casttype."),'') ".$valueSql;
 							} else {
@@ -1271,7 +1283,9 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 			}
 			$fieldSql .= ')';
 			$fieldSqlList[$index] = $fieldSql;
+			
 		}
+		
 		foreach ($this->manyToManyRelatedModuleConditions as $index=>$conditionInfo) {
 			$relatedModuleMeta = RelatedModuleMeta::getInstance($this->meta->getTabName(),
 					$conditionInfo['relatedModule']);
@@ -1282,13 +1296,14 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 			$conditionInfo['value'].")";
 			$fieldSqlList[$index] = $fieldSql;
 		}
-
+		
 		$groupSql = $this->makeGroupSqlReplacements($fieldSqlList, $groupSql);
+		
 		if($this->conditionInstanceCount > 0) {
 			$this->conditionalWhere = $groupSql;
 			$sql .= $groupSql;
 		}
-
+		
 		// crmv@30014 - condizioni aggiuntive
 		$moduleInstance = CRMEntity::getInstance($this->module);
 		if ($moduleInstance && method_exists($moduleInstance, 'getQueryExtraWhere')) {
@@ -1297,7 +1312,7 @@ class QueryGenerator extends SDKExtendableClass { //crmv@42024
 		// crmv@30014e
 
 		if ($this->appendWhereClause) $sql .= $this->appendWhereClause;	// crmv@37004 - extra where conditions
-
+		
 		$this->whereClause = $sql;
 		return $sql;
 	}
