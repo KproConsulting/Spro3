@@ -4690,6 +4690,8 @@ class KpBPMN {
                     INNER JOIN {$table_prefix}_kpprocedure proc ON proc.kpprocedureid = entproc.kp_procedura
                     WHERE entruolat.deleted = 0 AND ent.deleted = 0 AND ruol.kpruoliid = ".$ruolo." AND entproc.kp_procedura = ".$procedura;
 
+        $query .= " AND kp_tipo_entita_bpmn != 'subProcess'"; 
+
         $query .= " GROUP BY entproc.kpentitaprocedureid
                     ORDER BY proc.kp_nome_procedura ASC, entproc.kp_order ASC, entproc.kp_nome_entita ASC";
 
