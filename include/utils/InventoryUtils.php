@@ -716,11 +716,23 @@ class InventoryUtils extends SDKExtendableUniqueClass {
 				$query = "SELECT ".$table_prefix."_producttaxrel.*, ".$table_prefix."_inventorytaxinfo.* FROM ".$table_prefix."_inventorytaxinfo left JOIN ".$table_prefix."_producttaxrel ON ".$table_prefix."_inventorytaxinfo.taxid = ".$table_prefix."_producttaxrel.taxid WHERE ".$table_prefix."_producttaxrel.productid = ?";
 				//crmv@14612 end
 			}
+			/* kpro@tom260620190941 */
+			elseif($available == 'kpAllForRow'){
+				//Anziché caricare solo le tasse relazionate al servizio/prodotto carica tutte le tasse attive
+				$query = "SELECT ".$table_prefix."_inventorytaxinfo.* FROM ".$table_prefix."_inventorytaxinfo WHERE ".$table_prefix."_inventorytaxinfo.deleted=0";
+			}
+			/* kpro@tom260620190941 end */
 			else
 			{
 				$query = "SELECT ".$table_prefix."_producttaxrel.*, ".$table_prefix."_inventorytaxinfo.* FROM ".$table_prefix."_inventorytaxinfo INNER JOIN ".$table_prefix."_producttaxrel ON ".$table_prefix."_inventorytaxinfo.taxid = ".$table_prefix."_producttaxrel.taxid WHERE ".$table_prefix."_producttaxrel.productid = ? $where";
 			}
 			$params = array($productid);
+
+			/* kpro@tom260620190941 */
+			if($available == 'kpAllForRow'){
+				$params = array();
+			}
+			/* kpro@tom260620190941 end */
 
 			//Postgres 8 fixes
 			if( $adb->dbType == "pgsql")
@@ -729,7 +741,16 @@ class InventoryUtils extends SDKExtendableUniqueClass {
 			$res = $adb->pquery($query, $params);
 			for($i=0;$i<$adb->num_rows($res);$i++)
 			{
-				$tax_details[$i]['productid'] = $adb->query_result($res,$i,'productid');
+				
+				/* kpro@tom260620190941 */
+				if($available == 'kpAllForRow'){
+					$tax_details[$i]['productid'] = $productid;
+				}
+				else{
+					$tax_details[$i]['productid'] = $adb->query_result($res,$i,'productid');
+				}
+				/* kpro@tom260620190941 end */
+
 				$tax_details[$i]['taxid'] = $adb->query_result($res,$i,'taxid');
 				$tax_details[$i]['taxname'] = $adb->query_result($res,$i,'taxname');
 				$tax_details[$i]['taxlabel'] = $adb->query_result($res,$i,'taxlabel');
@@ -1292,7 +1313,12 @@ class InventoryUtils extends SDKExtendableUniqueClass {
 						}
 						
 					} else {
-						$taxes_for_product = $this->getTaxDetailsForProduct($prod_id,'all');
+
+						/* kpro@tom260620190941 */
+						//$taxes_for_product = $this->getTaxDetailsForProduct($prod_id,'all');
+						$taxes_for_product = $this->getTaxDetailsForProduct($prod_id,'kpAllForRow');
+						/* kpro@tom260620190941 end */
+
 						for ($tax_count=0; $tax_count<count($taxes_for_product); ++$tax_count) {
 							$tax_name = $taxes_for_product[$tax_count]['taxname'];
 							$request_tax_name = $tax_name."_percentage".$i;
@@ -2267,7 +2293,12 @@ class InventoryUtils extends SDKExtendableUniqueClass {
 
 		// populate tax info
 		//First we will get all associated taxes as array
-		$tax_details = $this->getTaxDetailsForProduct($hdnProductId,'all');
+
+		/* kpro@tom260620190941 */
+		//$tax_details = $this->getTaxDetailsForProduct($hdnProductId,'all');
+		$tax_details = $this->getTaxDetailsForProduct($hdnProductId,'kpAllForRow');
+		/* kpro@tom260620190941 end */
+
 		for ($tax_count=0; $tax_count<count($tax_details); ++$tax_count) {
 			$tax_name = $tax_details[$tax_count]['taxname'];
 			$tax_value = '0.00';
