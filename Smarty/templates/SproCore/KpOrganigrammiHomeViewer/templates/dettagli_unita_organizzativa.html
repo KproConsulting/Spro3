@@ -1,0 +1,186 @@
+<style>
+    .nav-item.active {
+        border-bottom: solid red;
+    }
+</style>
+
+<div style="width: 100%; height: 100%; margin: 0px !important; padding: 0px !important;">
+
+    <ul class="nav nav-tabs nav-justified" style="margin: 0px !important; padding: 0px !important;" role="tablist">
+        <li class="nav-item active">
+            <a data-toggle="tab" onClick="tabSelezionato('informazioni_unita')" aria-controls="informazioni_unita" href="#informazioni_unita" style="color: #2b577c !important;">
+                Informazioni
+            </a>
+        </li>
+        <li class="nav-item">
+            <a data-toggle="tab" onClick="tabSelezionato('processi_unita')" aria-controls="processi_unita" href="#processi_unita" style="color: #2b577c !important;">
+                Processi
+            </a>
+        </li>
+        <li class="nav-item" id="navmenu_processi" style="text-align: right; margin: 0px;">
+            <div class="dropdown" style="text-align: right; margin: 0px; padding: 0px; padding-right: 10px;">
+                <button style="text-align: right; margin: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px; padding-bottom: 5px;" class="btn bmd-btn-icon dropdown-toggle" type="button" id="task_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons">more_vert</i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="task_menu">
+                    <button class="dropdown-item" id="bottone_genera_revisione" type="button" style="display: none;">Crea Revisione</button>
+                    <hr />
+                    <span style="padding-left: 20px;">Stampa:</span>
+                    <ul>
+                        <!--<li>
+                            <button class="dropdown-item" id="bottone_stampa_svg" type="button">SVG</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" id="bottone_stampa_png" type="button">PNG</button>
+                        </li>-->
+                        <li>
+                            <button class="dropdown-item" id="bottone_stampa_html" type="button">HTML</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div id="informazioni_unita" class="tab-pane fade in active" style="height: 100%; overflow-y: auto; color: #2b577c !important; padding-left: 10px; padding-right: 10px;" role="tabpanel">
+
+            <div class="panel-body">
+
+                <div class="row">
+
+                    <div class="col">
+                        <img id="readonly_immagine_risorsa" src="" style="max-height: 200px;">
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="readonly_risorsa">Risorsa</label>
+                            <input type="text" class="form-control" id="readonly_risorsa" placeholder="Risorsa" disabled readonly>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="readonly_ruolo">Ruolo</label>
+                            <input type="text" class="form-control" id="readonly_ruolo" placeholder="Ruolo" disabled readonly>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col">
+                        <div class="checkbox">
+                            <label for="readonly_staff">
+                                <input type="checkbox" class="form-check-input" id="readonly_staff" disabled readonly />
+                                <span class="checkbox-material">Staff</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="processi_unita" class="tab-pane fade" style="height: 100%; overflow-y: auto; color: #2b577c !important; overflow-y: auto;" role="tabpanel">
+
+            <div class="panel-body">
+
+                <h5 style="margin: 0px;">Lista Processi</h5>
+                <hr />
+                <table class="table-striped" style="width: 100%;">
+
+                    <thead>
+                        <tr>
+                            <th>
+                                Processo
+                            </th>
+                            <th>
+                                Attività
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="body_tabella_processi_unita">
+                        <tr>
+                            <td colspan='5' style='text-align: center;'><em>Nessun processo trovato!</em></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div id="documenti_unita" class="tab-pane fade" style="height: 100%; overflow-y: auto; color: #2b577c !important;" role="tabpanel">
+
+            <div class="panel-body">
+                <h5 style="margin: 0px;">Lista Documenti</h5>
+                <hr />
+                <table class="table-striped" style="width: 100% ">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center;">
+                            </th>
+                            <th>
+                                Nome Documento
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="body_tabella_documenti">
+                        <tr>
+                            <td colspan='5' style='text-align: center;'><em>Nessun documento trovato!</em></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <div id="rischi_unita" class="tab-pane fade" style="height: 100%; overflow-y: auto; color: #2b577c !important;" role="tabpanel">
+
+            <div class="panel-body">
+                <h5 style="margin: 0px;">Lista Rischi</h5>
+                <hr />
+                <table class="table-striped" style="width: 100% ">
+                    <thead>
+                        <tr>
+                            <th>
+                                Nome Rischio
+                            </th>
+                            <th style="width: 100px;">
+                                Tipo
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="body_tabella_rischi">
+                        <tr>
+                            <td colspan='5' style='text-align: center;'><em>Nessun rischio trovato!</em></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
