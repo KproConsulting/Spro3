@@ -130,11 +130,15 @@ S-PRO 3.0
 - 05/10/2018 kpro@bid051020181500 Spostamento di alcune schermate custom dei tab in list view a livello di classe del modulo
 - 17/10/2018 kpro@bid171020181220 Aggiunta possibilità di calcolare il fatturato nelle commesse dalle fatture o dagli OdF
 - 23/11/2018 kpro@bid231120181100 Aggiunta funzione per riportare alcuni campi dal corso di formazione durante la creazione di un giorno di formazione
+- 10/12/2018 kpro@tom101220181102 Fatturazione Elettronica
 - 20/12/2018 kpro@tom201220181609 Serve ad evitare che un corso sia indicato come aggiornamento di se stesso creando un loop
 - 23/01/2019 kpro@tom230120190909 Correzione bug che portava l'opportunità a perdere l'agente
 - 24/01/2019 kpro@tom240120191400 Aggiunta gestione ritenuta d'acconto
-- 29/01/2019 kpro@tom290120190943 Gestione banca in fattura elettronica
 - 31/01/2019 kpro@tom310120191640 Gestione cassa previdenziale in fattura elettronica
-
-S-PRO 4.0
-
+- 04/03/2019 kpro@tom040320190954 Al salvataggio della fattura effettuo il controllo di coerenza della data SOLO se la fattura non sipone già del numero
+- 04/03/2019 kpro@tom040320191010 Incremento a 4 decimali per l'XML fattura elettronica
+- 05/03/2019 kpro@tom050320191416 Correzione errore visualizzazione stato corso nel calendario corsi
+- 07/03/2019 kpro@tom070320190925 Correzione problema generazione odf di saldo da ordini in presenza di arrotondamenti a più di 2 decimali
+- 08/04/2019 kpro@tom080420191118 Correzione QueryGenerator affinche funzioni il filtro sulla data di scadenza dei servizi a contratto
+- 10/04/2019 kpro@tom100420191137 Correzione bcmod nel popup di esportazione RIBA
+- 06/05/2019 kpro@tom060520191636 Corretto problema calcolo sconti per fattura elettronica
