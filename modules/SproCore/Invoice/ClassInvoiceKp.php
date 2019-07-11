@@ -2214,7 +2214,7 @@ class InvoiceKp extends Invoice {
 
                     /* kpro@tom060520191636 */
                     $ammontare_sconto = $linea["discount_amount"] / $linea["quantity"];
-                    $ammontare_sconto = number_format($ammontare_sconto, 2, ".", "");
+                    $ammontare_sconto = number_format($ammontare_sconto, 4, ".", "");
 
                     //2.2.1.10.3 <Importo> <0.1>
                     $ScontoMaggiorazione->appendChild($domtree->createElement( 'Importo', $ammontare_sconto ) );
