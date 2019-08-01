@@ -142,3 +142,4 @@ S-PRO 3.0
 - 08/04/2019 kpro@tom080420191118 Correzione QueryGenerator affinche funzioni il filtro sulla data di scadenza dei servizi a contratto
 - 10/04/2019 kpro@tom100420191137 Correzione bcmod nel popup di esportazione RIBA
 - 06/05/2019 kpro@tom060520191636 Corretto problema calcolo sconti per fattura elettronica
+- 01/08/2019 kpro@tom010820191410 Correzione problema arrotondamento tasse per fattura elettronica
