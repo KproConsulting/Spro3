@@ -3032,8 +3032,8 @@ class InvoiceKp extends Invoice {
                 $totale_imposta = $tax_total;
             }
 
-            $totale_imponibile = number_format($totale_imponibile, 2, ".", "");
-            $totale_imposta = number_format($totale_imposta, 2, ".", "");
+            //$totale_imponibile = number_format($totale_imponibile, 2, ".", "");   //kpro@tom010820191410
+            //$totale_imposta = number_format($totale_imposta, 2, ".", ""); //kpro@tom010820191410
 
             $result[$id_tassa] = array("aliquota_iva" => $tax1,
                                         "totale_imponibile" => $totale_imponibile,
@@ -3042,6 +3042,15 @@ class InvoiceKp extends Invoice {
                                         "normativa" => $norma);
 
         }
+
+        /* kpro@tom010820191410 */
+        foreach( $result as $key => $value ){
+
+            $result[$key]["totale_imponibile"] = number_format($value["totale_imponibile"], 2, ".", "");
+            $result[$key]["totale_imposta"] = number_format($value["totale_imposta"], 2, ".", "");
+
+        }
+        /* kpro@tom010820191410 end */
 
         return $result;
 
