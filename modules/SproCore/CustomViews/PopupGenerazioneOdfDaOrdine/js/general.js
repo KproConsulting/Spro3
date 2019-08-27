@@ -258,7 +258,14 @@ function caricaRigheOrdine(ordine) {
                     lista_prodotti += "<td style='text-align: right; vertical-align: middle;' id='td_val_" + data[i].salesorderlineid + "'>";
                     lista_prodotti += "<div class='form-group'>";
                     lista_prodotti += "<label for='val_" + data[i].salesorderlineid + "'></label>";
-                    lista_prodotti += "<input type='number' class='form-control input_val' id='val_" + data[i].salesorderlineid + "' style='text-align: right;' value=" + parseFloat(data[i].valore_da_fat).toFixed(2) + ">";
+                    /* kpro@tom270820191056 */
+                    if( parseFloat(data[i].amm_sconto).toFixed(2) > 0 ){
+                        lista_prodotti += "<input type='number' class='form-control input_val' readonly disabled id='val_" + data[i].salesorderlineid + "' style='text-align: right;' value=" + parseFloat(data[i].valore_da_fat).toFixed(2) + ">";
+                    }
+                    else{
+                        lista_prodotti += "<input type='number' class='form-control input_val' id='val_" + data[i].salesorderlineid + "' style='text-align: right;' value=" + parseFloat(data[i].valore_da_fat).toFixed(2) + ">";
+                    }
+                    /* kpro@tom270820191056 end */
                     lista_prodotti += "</div>";
                     lista_prodotti += "</td>";
                 }
