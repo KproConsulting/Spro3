@@ -143,3 +143,4 @@ S-PRO 3.0
 - 10/04/2019 kpro@tom100420191137 Correzione bcmod nel popup di esportazione RIBA
 - 06/05/2019 kpro@tom060520191636 Corretto problema calcolo sconti per fattura elettronica
 - 01/08/2019 kpro@tom010820191410 Correzione problema arrotondamento tasse per fattura elettronica
+- 27/08/2019 kpro@tom270820191056 Correzione problema generazione odf da ordine di vendita in caso di sconti in ammontare (qualora si fatturi parzialmente non usando la percentuale ma indicando l'importo)
