@@ -1301,9 +1301,14 @@ function getFormazioneEseguitaRisorsaTipoCorso($risorsa, $tipo_corso, $aggiornat
 		
 		$data_scad_for = $adb->query_result($res_formazione, $i, 'data_scad_for');
         $data_scad_for = html_entity_decode(strip_tags($data_scad_for), ENT_QUOTES, $default_charset);
-		list($anno_scad, $mese_scad, $giorno_scad) = explode("-", $data_scad_for);
-		$data_scad_for_inv = date("d-m-Y", mktime(0, 0, 0, $mese_scad, $giorno_scad, $anno_scad));
-		$in_scadenza_reale_inv = date("d-m-Y", mktime(0, 0, 0, $mese_scad, (int)$giorno_scad - $giorni_in_scadenza, $anno_scad));
+		if( $data_scad_for == null ){
+			$data_scad_for = "";
+		}
+		else{
+			list($anno_scad, $mese_scad, $giorno_scad) = explode("-", $data_scad_for);
+			$data_scad_for_inv = date("d-m-Y", mktime(0, 0, 0, $mese_scad, $giorno_scad, $anno_scad));
+			$in_scadenza_reale_inv = date("d-m-Y", mktime(0, 0, 0, $mese_scad, (int)$giorno_scad - $giorni_in_scadenza, $anno_scad));
+		}
 		
 		$tot_ore_formazio = $adb->query_result($res_formazione, $i, 'tot_ore_formazio');
         $tot_ore_formazio = html_entity_decode(strip_tags($tot_ore_formazio), ENT_QUOTES, $default_charset);
