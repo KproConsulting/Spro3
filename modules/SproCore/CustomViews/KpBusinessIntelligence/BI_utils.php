@@ -436,7 +436,7 @@ function GetDatiValuta($id_valuta){
     return $dati_valuta;
 }
 
-function getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, $ordinamento, $lingua, $numero_record = ''){ /* kpro@bid040120191730 */
+function getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, $ordinamento, $lingua, $numero_record = '', $anno = '', $mese_da = '', $mese_a = ''){ /* kpro@bid040120191730 */
     global $adb, $table_prefix, $default_charset;
 
     $lista_servizi = array();
@@ -471,6 +471,19 @@ function getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, 
     if($nome != null && $nome != '' && $nome != '--Tutti--'){
         $q .= " AND ser.servicename LIKE '%".$nome."%'";
     }
+
+    if( $anno != '' ){
+        $q .= " AND YEAR(odf.kp_data_fattura) = ".$anno;
+    }
+
+    if( $mese_da != '' ){
+        $q .= " AND MONTH(odf.kp_data_fattura) >= ".$mese_da;
+    }
+
+    if( $mese_a != '' ){
+        $q .= " AND MONTH(odf.kp_data_fattura) <= ".$mese_a;
+    }
+
     /* kpro@bid040120191730 */
     $q .= " GROUP BY ser.serviceid
         ORDER BY COUNT(*) ".$ordinamento;
@@ -479,6 +492,8 @@ function getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, 
         $q .= " LIMIT ".$numero_record;
     }
     /* kpro@bid040120191730 end */
+
+    //print_r($q);die;
 
     $res = $adb->query($q);
     $num = $adb->num_rows($res);
@@ -1399,8 +1414,6 @@ function GetPrevisioneCanoni($anno, $numero_mese, $array_dati){
         OR (YEAR(can.data_fine) = {$anno}
         AND MONTH(can.data_fine) >= {$numero_mese})))))";
 
-    $q .= " AND (can.kp_canone_interno IS NULL OR can.kp_canone_interno = '' OR can.kp_canone_interno = '0')"; /* kproc@bid180920181540 */
-
     if($utenti != null && $utenti != '' && $utenti != 'Tutti'){
         $q .= " AND ent.smownerid = ".$utenti;
     }
@@ -2114,10 +2127,6 @@ function GetFatturatoNoteDiCredito($anno, $numero_mese, $array_dati){
 
         $fatturato_tot += $fatturato;
     }
-
-    if($debug){
-        LogBI('--- '.__FUNCTION__.': -'.$fatturato_tot);
-    }
     
     return $fatturato_tot;
 }
@@ -2237,10 +2246,6 @@ function GetFatturatoFattureDiAcconto($anno, $numero_mese, $array_dati){
         }
 
         $fatturato_tot += $fatturato;
-    }
-
-    if($debug){
-        LogBI('--- '.__FUNCTION__.': '.$fatturato_tot);
     }
     
     return $fatturato_tot;
