@@ -174,8 +174,8 @@ if($is_admin == 'on'){
         }
         
         $objPHPExcel->getActiveSheet()
-            ->setCellValue('B2', $anno)
-            ->setCellValue('B3', $anno_confr)
+            ->setCellValue('B2', $anno_confr)
+            ->setCellValue('B3', $anno)
             ->setCellValue('B4', $anno_budget)
             ->setCellValue('B5', GetDescrizioneMese($mese_da, $lingua))
             ->setCellValue('B6', GetDescrizioneMese($mese_a, $lingua))
@@ -280,8 +280,8 @@ if($is_admin == 'on'){
         
         $numero_riga = 2;
         
-        $lista_servizi = getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, $ordinamento, $lingua);
-        
+        $lista_servizi = getListaServizi($servizi, $area_aziendale, $categoria, $codice, $nome, $ordinamento, $lingua, '0,20', $anno, $mese_da, $mese_a); /* kpro@bid040120191730 */
+
         foreach($lista_servizi as $servizio){
             
             $id_servizio = $servizio["id"];
@@ -341,9 +341,14 @@ if($is_admin == 'on'){
                     $percentuale = 0;
                 }
             
-                $fatturato_tot_testo = number_format($fatturato_tot,2,',','.');
-                $fatturato_confr_tot_testo = number_format($fatturato_confr_tot,2,',','.');
+                $fatturato_tot = number_format($fatturato_tot,2,',','.');
+                $fatturato_confr_tot = number_format($fatturato_confr_tot,2,',','.');
                 $percentuale_testo = number_format($percentuale,2,',','.')." %";
+                
+                if($quantita_valore == 'valore'){
+                    $fatturato_tot = $dati_valuta['simbolo']." ".$fatturato_tot;
+                    $fatturato_confr_tot = $dati_valuta['simbolo']." ".$fatturato_confr_tot;
+                }
 
                 $column = 'A';
 
@@ -362,24 +367,10 @@ if($is_admin == 'on'){
                 $objPHPExcel->getActiveSheet()->setCellValue($column.$numero_riga, $percentuale_testo);
 
                 $numero_riga++;
-
             }
         }
         
         $numero_riga--;
-
-        /* kpro@bid040120191730 */
-        $excel_number_format = $dati_valuta['simbolo'].' #,##0.00';
-
-        $objPHPExcel->getActiveSheet()
-            ->getStyle('E2:E'.$numero_riga)
-            ->getNumberFormat()
-            ->setFormatCode($excel_number_format);
-        $objPHPExcel->getActiveSheet()
-            ->getStyle('F2:F'.$numero_riga)
-            ->getNumberFormat()
-            ->setFormatCode($excel_number_format);
-        /* kpro@bid040120191730 end */
 
         $objPHPExcel->getActiveSheet()->getStyle("A1:G1")->getFont()->setBold(true);
 
