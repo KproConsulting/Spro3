@@ -146,3 +146,4 @@ S-PRO 3.0
 - 27/08/2019 kpro@tom270820191056 Correzione problema generazione odf da ordine di vendita in caso di sconti in ammontare (qualora si fatturi parzialmente non usando la percentuale ma indicando l'importo)
 - 03/09/2019 kpro@tom030920190946 Problema lista risorse al cambio pagina, se due risorse avevano lo stesso cognome al cambio pagina la prima risorsa era l'ultima dell pagina precedente
 - 18/09/2019 kpro@tom180920191546 Problema aggiornamento situazione visite mediche con esiti privi di testata visita
+- 03/03/2020 kpro@tom030320201455 Problema invio pdf preventivo via mail
