@@ -25,7 +25,7 @@ $name = $pdfmaker->generatePDFForEmail($Records, $relmodule, $Templateids, $lang
 
 if($relmodule == "Quotes"){
 
-    echo $name.'.pdf';
+    echo $name; //kpro@tom030320201455
     $Records_length = count($Records);
     
 	for($i = 0; $i < $Records_length; $i++){
