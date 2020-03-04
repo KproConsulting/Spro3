@@ -25,7 +25,23 @@ $name = $pdfmaker->generatePDFForEmail($Records, $relmodule, $Templateids, $lang
 
 if($relmodule == "Quotes"){
 
-    echo $name; //kpro@tom030320201455
+    /* kpro@tom030320201455 */
+    function endsWith($string, $endString) { 
+        $len = strlen($endString); 
+        if ($len == 0) { 
+            return true; 
+        } 
+        return (substr($string, -$len) === $endString); 
+    } 
+
+    if( endsWith( $name, ".pdf" ) ){
+        echo $name;
+    }
+    else{
+        echo $name.".pdf";
+    }
+    /* kpro@tom030320201455 end */
+    
     $Records_length = count($Records);
     
 	for($i = 0; $i < $Records_length; $i++){
