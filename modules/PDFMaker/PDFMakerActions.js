@@ -229,7 +229,7 @@ VTE.PDFMakerActions = VTE.PDFMakerActions || {
 							risultato = allegato_principale;
 						}
 						console.log("validate_sendPDFmail: " + risultato);
-						window.open('index.php?module=Emails&action=EmailsAjax&file=EditView&pmodule='+module+'&idlist='+idlist+'&field_lists='+field_lists+'&language='+document.getElementById('template_language').value+'&sendmail=true&attachment='+allegato_principale+'&pid='+record+'&altriid='+altri_allegati,'_blank');
+						window.open('index.php?module=Emails&action=EmailsAjax&file=EditView&pmodule='+module+'&idlist='+idlist+'&field_lists='+field_lists+'&language='+document.getElementById('template_language').value+'&sendmail=true&attachment='+allegato_principale+'.pdf&pid='+record+'&altriid='+altri_allegati,'_blank'); //kpro@tom030320201455
 						me.hideBusy();                            
 					},
 				});
