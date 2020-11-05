@@ -452,29 +452,81 @@ class InventoryUtils extends SDKExtendableUniqueClass {
 
 				switch ($kp_natura) {
 					case 'N1':
-						$kp_natura_decode = "Escluse ex art. 15";
+						$kp_natura_decode = "N1 - Escluse ex art. 15";
 						break;
 					case 'N2':
-						$kp_natura_decode = "Non soggette";
+						$kp_natura_decode = "N2 - Non soggette (non più valido dal primo gennaio 2021)";
+						break;
+					case 'N2.1':
+						$kp_natura_decode = "N2.1 - Non soggette ad IVA ai sensi degli art. da 7 a 7-septies del DPR 633/72";
+						break;
+					case 'N2.2':
+						$kp_natura_decode = "N2.2 - Non soggette - altri casi";
 						break;
 					case 'N3':
-						$kp_natura_decode = "Non imponibili";
+						$kp_natura_decode = "N3 - Non imponibili (non più valido dal primo gennaio 2021)";
+						break;
+					case 'N3.1':
+						$kp_natura_decode = "N3.1 - Non imponibili - esportazioni";
+						break;
+					case 'N3.2':
+						$kp_natura_decode = "N3.2 - Non imponibili - cessioni intracomunitarie";
+						break;
+					case 'N3.3':
+						$kp_natura_decode = "N3.3 - Non imponibili - cessioni verso San Marino";
+						break;
+					case 'N3.4':
+						$kp_natura_decode = "N3.4 - Non imponibili - operazioni assimilate alle cessioni all'esportazione";
+						break;
+					case 'N3.5':
+						$kp_natura_decode = "N3.5 - Non imponibili - a seguito di dichiarazioni d'intento";
+						break;
+					case 'N3.6':
+						$kp_natura_decode = "N3.6 - Non imponibili - altre operazioni che non concorrono alla formazione del plafond";
 						break;
 					case 'N4':
-						$kp_natura_decode = "Esenti";
+						$kp_natura_decode = "N4 - Esenti";
 						break;
 					case 'N5':
-						$kp_natura_decode = "Regime del margine / IVA non esposta in fattura";
+						$kp_natura_decode = "N5 - Regime del margine / IVA non esposta in fattura";
 						break;
 					case 'N6':
-						$kp_natura_decode = "Inversione contabile";
+						$kp_natura_decode = "N6 - Inversione contabile (non più valido dal primo gennaio 2021)";
+						break;
+					case 'N6.1':
+						$kp_natura_decode = "N6.1 - Inversione contabile - cessione di rottami e altri materiali di recupero";
+						break;
+					case 'N6.2':
+						$kp_natura_decode = "N6.2 - Inversione contabile - cessione di oro e argento puro";
+						break;
+					case 'N6.3':
+						$kp_natura_decode = "N6.3 - Inversione contabile - subappalto nel settore edile";
+						break;
+					case 'N6.4':
+						$kp_natura_decode = "N6.4 - Inversione contabile - cessione di fabbricati";
+						break;
+					case 'N6.5':
+						$kp_natura_decode = "N6.5 - Inversione contabile - cessione di telefoni cellulari";
+						break;
+					case 'N6.6':
+						$kp_natura_decode = "N6.6 - Inversione contabile - cessione di prodotti elettronici";
+						break;
+					case 'N6.7':
+						$kp_natura_decode = "N6.7 - Inversione contabile - prestazioni comparto edile e settori connessi";
+						break;
+					case 'N6.8':
+						$kp_natura_decode = "N6.8 - Inversione contabile - operazioni settore energetico";
+						break;
+					case 'N6.9':
+						$kp_natura_decode = "N6.9 - Inversione contabile - altri casi";
 						break;
 					case 'N7':
-						$kp_natura_decode = "IVA assolta in altro stato UE";
+						$kp_natura_decode = "N7 - IVA assolta in altro stato UE";
 						break;
 					default:
 						$kp_natura_decode = "";
 				}
+				
 			}
 
 			$taxtypes[$i]['kp_codice_iva'] = $adb->query_result($res, $i, 'kp_codice_iva');
