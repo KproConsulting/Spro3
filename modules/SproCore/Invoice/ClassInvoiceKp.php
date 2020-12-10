@@ -41,9 +41,9 @@ class InvoiceKp extends Invoice {
         parent::save_module($module); 
 
         require_once('Invoice_utils.php');
-
+		
+		$this->setCassa();  //kpro@tom310120191640
         $this->setImponibileFattura(); //kpro@tom310120191640
-        $this->setCassa();  //kpro@tom310120191640
         $this->setRitenuta(); //kpro@tom240120191400
         $this->setTotaleFattura();  //kpro@tom310120191640
         $this->setTotaleTasseFattura(); //kpro@tom310120191640
@@ -535,6 +535,8 @@ class InvoiceKp extends Invoice {
         }
 
         $domtree = new DOMDocument( '1.0', 'UTF-8' );
+		$domtree->formatOutput = true;	//Fa si che l'XML mantenga la formatazione
+		$domtree->preserveWhiteSpace = true; //Fa si che l'XML mantenga la formatazione
 
         $xslt = $domtree->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="fatturaordinaria_v1.2.1.xsl"');
         $xslt = $domtree->appendChild($xslt);
@@ -3035,7 +3037,7 @@ class InvoiceKp extends Invoice {
             //$totale_imponibile = number_format($totale_imponibile, 2, ".", "");   //kpro@tom010820191410
             //$totale_imposta = number_format($totale_imposta, 2, ".", ""); //kpro@tom010820191410
 
-            $result[$id_tassa] = array("aliquota_iva" => $tax1,
+            $result[$id_tassa] = array("aliquota_iva" => $percentage,
                                         "totale_imponibile" => $totale_imponibile,
                                         "totale_imposta" => $totale_imposta,
                                         "natura" => $natura,
