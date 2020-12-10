@@ -674,6 +674,10 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
             }
             /* kpro@tom310120191640 end */
 
+            foreach($invoice->column_fields as $fieldname => $value) {
+                $invoice->column_fields[$fieldname] = decode_html($value);	//Pulisco i caratteri HTML
+            }
+
             $invoice->save('Invoice', $longdesc=true, $offline_update=false, $triggerEvent=false); 
 
             $invoiceid = $invoice->id;
@@ -844,8 +848,8 @@ CONF. TASSE: split payment ".$split_payment.", ritenuta acconto ".$ritenuta_acco
     /* kpro@tom240120191400 */
     $focus_invoice = CRMEntity::getInstance('Invoice'); 
     $focus_invoice->retrieve_entity_info($invoiceid, "Invoice");
+	$focus_invoice->setCassa();  //kpro@tom310120191640
     $focus_invoice->setImponibileFattura(); //kpro@tom310120191640
-    $focus_invoice->setCassa();  //kpro@tom310120191640
     $focus_invoice->setRitenuta(); //kpro@tom240120191400
     $focus_invoice->setTotaleFattura();  //kpro@tom310120191640
     $focus_invoice->setTotaleTasseFattura(); //kpro@tom310120191640
