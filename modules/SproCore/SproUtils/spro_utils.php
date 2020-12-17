@@ -293,7 +293,7 @@ function calcolaSituazioneFormazione(){
      * @copyright (c) 2017, Kpro Consulting Srl
      */
 	 
-	printf("<br />Calcolo situazione formazione iniziato!");
+	//printf("<br />Calcolo situazione formazione iniziato!");
 
 	aggiornaStatoMansioniRisorseNonAttive();
 	 
@@ -310,11 +310,11 @@ function calcolaSituazioneFormazione(){
 	
 	foreach($lista_aziende as $azienda){
 		
-		printf("<br />--- Azienda: ".$azienda['accountid']);
+		//printf("<br />--- Azienda: ".$azienda['accountid']);
 		
 		$giorni_in_scadenza = getGiorniInScadenzaAzienda($azienda['accountid'], $default_in_scadenza, 'Formazione');
 		
-		printf(" Giorni in scadenza: ".$giorni_in_scadenza);
+		//printf(" Giorni in scadenza: ".$giorni_in_scadenza);
 		
 		calcolaSituazioneFormazioneAzienda($azienda['accountid'], $giorni_in_scadenza);
 		
@@ -960,13 +960,31 @@ function calcolaSituazioneTipoCorsoBase($risorsa, $mansionirisorsaid, $tipo_cors
     $lista_formazione_eseguita = getFormazioneEseguitaRisorsaTipoCorso($risorsa, $tipo_corso, $dati_tipo_corso['aggiornato_da'], $giorni_in_scadenza);
  
 	if(count($lista_formazione_eseguita) == 0){
+
+		/* kpro@tom100420191438 */
+		//Una risorsa ha tempo 60 giorni dall'assunzione per fare i corsi base
+		$focus_risorsa = CRMEntity::getInstance('Contacts');
+		$focus_risorsa->retrieve_entity_info($risorsa, "Contacts", $dieOnError=false); 
+
+		$data_assunzione = $focus_risorsa->column_fields["data_assunzione"];
+		$data_assunzione = html_entity_decode(strip_tags($data_assunzione), ENT_QUOTES, $default_charset);
+		if( $data_assunzione == null || $data_assunzione == "" || $data_assunzione == '0000-00-00' ){
+			$validita_formazione = "";
+		}
+		else{
+			$validita_formazione = new DateTime($data_assunzione);
+			$incremento = new DateInterval('P60D');
+			$validita_formazione = $validita_formazione->add($incremento);
+			$validita_formazione = $validita_formazione->format('Y-m-d');
+		}
+		/* kpro@tom100420191438 end */
 		
 		$stato_formazione = 'Non eseguita';
 		$data_formazione = '';
-		$validita_formazione = '';
+		$validita_formazione = $validita_formazione;	//kpro@tom100420191438
 		$durata_formazione = 0;
 		$nota_stato = "Nota stato situazione formazione: La formazione NON e' stata eseguita in quanto per tale tipo corso e tale risorsa non risultano partecipazioni a corsi di formazione.";
-		
+
 	}
 	else{
 		
@@ -1009,6 +1027,20 @@ function setSituazioneFormazione($tipo_corso, $risorsa, $mansionirisorsaid, $dur
 		$finestra_antecedente = '0';
 	}
 	
+	/* kpro@tom171220201531 */
+	if( $validita_formazione == null || $validita_formazione == "0000-00-00" ){
+		$validita_formazione = '';
+	}
+
+	if( $data_formazione == null || $data_formazione == "0000-00-00" ){
+		$data_formazione = '';
+	}
+
+	if( $validita_formazione_prec == null || $validita_formazione_prec == "0000-00-00" ){
+		$validita_formazione_prec = '';
+	}
+	/* kpro@tom171220201531 end */
+	
 	$dati_tipo_corso = getDatiTipoCorso($tipo_corso);
 	
 	if($dati_tipo_corso['durata_corso'] == null || $dati_tipo_corso['durata_corso'] == ''){
@@ -1049,29 +1081,40 @@ function setSituazioneFormazione($tipo_corso, $risorsa, $mansionirisorsaid, $dur
 		$situazformazid = $adb->query_result($res_verifica,0,'situazformazid');
 		$situazformazid = html_entity_decode(strip_tags($situazformazid), ENT_QUOTES,$default_charset);
 
-		$nota_stato = addslashes($nota_stato);
+		/* kpro@tom171220201531 */
+		$new_situazione_formazione = CRMEntity::getInstance('SituazFormaz'); 
+		$new_situazione_formazione->retrieve_entity_info($situazformazid, "SituazFormaz");
+
+		$new_situazione_formazione->column_fields['assigned_user_id'] = 1;
+		$new_situazione_formazione->column_fields['creator'] = 1;
+		$new_situazione_formazione->column_fields['mansione_risorsa'] = $mansionirisorsaid;
+		$new_situazione_formazione->column_fields['risorsa'] = $risorsa;
+		$new_situazione_formazione->column_fields['mansione'] = $dati_mansione_risorsa['mansione'];
+		$new_situazione_formazione->column_fields['tipo_corso'] = $tipo_corso;
+		$new_situazione_formazione->column_fields['data_formazione'] = $data_formazione;
+		$new_situazione_formazione->column_fields['validita_formazione'] = $validita_formazione;
+		$new_situazione_formazione->column_fields['stato_formazione'] = $stato_formazione;
+		$new_situazione_formazione->column_fields['azienda'] = $dati_mansione_risorsa['accountid'];
+		$new_situazione_formazione->column_fields['stabilimento'] = $dati_mansione_risorsa['stabilimento'];
+		$new_situazione_formazione->column_fields['ore_previste'] = $dati_tipo_corso['durata_corso'];
+		$new_situazione_formazione->column_fields['ore_effettuate'] = $durata_formazione;
+		$new_situazione_formazione->column_fields['kp_ore_prossimo_rin'] = $ore_prossimo_rinnovo;
+		$new_situazione_formazione->column_fields['description'] = $nota_stato;
+		$new_situazione_formazione->column_fields['data_prec_scadenza'] = $validita_formazione_prec;
+		$new_situazione_formazione->column_fields['kp_corso_scaglionat'] = $formazione_scaglionata;
+		$new_situazione_formazione->column_fields['kp_finestra_antec'] = $finestra_antecedente;
+		$new_situazione_formazione->column_fields['aggiornato'] = '1';
 		
-		$upd = "UPDATE {$table_prefix}_situazformaz SET
-				tipo_corso = ".$tipo_corso.",
-				data_formazione = '".$data_formazione."',
-				validita_formazione = '".$validita_formazione."',
-				azienda = ".$dati_mansione_risorsa['accountid'].",
-				stato_formazione = '".$stato_formazione."',
-				risorsa = ".$risorsa.",
-				mansione = ".$dati_mansione_risorsa['mansione'].",
-				mansione_risorsa = ".$mansionirisorsaid.",
-				stabilimento = ".$dati_mansione_risorsa['stabilimento'].",
-				ore_previste = ".$dati_tipo_corso['durata_corso'].",
-				ore_effettuate = ".$durata_formazione.",  
-				kp_ore_prossimo_rin = ".$ore_prossimo_rinnovo.",
-				data_prec_scadenza = '".$validita_formazione_prec."',
-				kp_corso_scaglionat = '".$formazione_scaglionata."',
-				kp_finestra_antec = '".$finestra_antecedente."',
-				aggiornato = '1',
-				description = '".$nota_stato."'
-				WHERE situazformazid = ".$situazformazid;
-		
-		$adb->query($upd);
+		foreach($new_situazione_formazione->column_fields as $fieldname => $value) {
+			$new_situazione_formazione->column_fields[$fieldname] = decode_html($value);	//Pulisco i caratteri HTML
+		}
+
+		$new_situazione_formazione->mode = 'edit';   //Imposto il record in modifica
+		$new_situazione_formazione->id = $situazformazid;
+
+		$new_situazione_formazione->save('SituazFormaz', $longdesc=true, $offline_update=false, $triggerEvent=false);
+
+		/* kpro@tom171220201531 end */
 		
 		pulisciRelatedPartecipazioniSituazioneFormazione($situazformazid);
 			
@@ -1300,7 +1343,7 @@ function getFormazioneEseguitaRisorsaTipoCorso($risorsa, $tipo_corso, $aggiornat
         $data_formazione = html_entity_decode(strip_tags($data_formazione), ENT_QUOTES, $default_charset);
 		
 		$data_scad_for = $adb->query_result($res_formazione, $i, 'data_scad_for');
-        $data_scad_for = html_entity_decode(strip_tags($data_scad_for), ENT_QUOTES, $default_charset);
+		$data_scad_for = html_entity_decode(strip_tags($data_scad_for), ENT_QUOTES, $default_charset);
 		if( $data_scad_for == null ){
 			$data_scad_for = "";
 		}
@@ -2729,8 +2772,8 @@ function getConfigurazioneIdStatici($id_configurazione){
 	$valore = 0;
 
 	$q_query = "SELECT valore
-			FROM kp_settings_config_id_statici
-			WHERE id_configurazione = ".$id_configurazione;
+				FROM kp_settings_config_id_statici
+				WHERE id_configurazione = ".$id_configurazione;
 	
 	$res_query = $adb->query($q_query);
 
@@ -3349,13 +3392,13 @@ function calcolaSituazioneDocumentiStabilimento($account, $stabilimento, $defaul
 	
 	foreach($lista_tipi_documenti as $tipo_documento){
 		
-		printf("<br />--------- Tipo Documento: ".$tipo_documento['id']);
+		//printf("<br />--------- Tipo Documento: ".$tipo_documento['id']);
 
 		$giorni_in_scadenza = getGiorniInScadenzaAzienda($account, $default_in_scadenza, 'Documenti', $tipo_documento['id']);
 
-		printf(" Giorni in scadenza: ".$giorni_in_scadenza);
+		//printf(" Giorni in scadenza: ".$giorni_in_scadenza);
 		
-		calcolaSituazioneDocumentiTipoDocumento($account, $stabilimento, $tipo_documento['id'], $tipo_documento['stato'], $giorni_in_scadenza, "si");
+		calcolaSituazioneDocumentiTipoDocumento($account, $stabilimento, $tipo_documento['id'], $tipo_documento['stato'], $giorni_in_scadenza, "si", $tipo_documento['assegnatario']);
 		
 	}
     
@@ -3378,7 +3421,8 @@ function getTipiDocumentiAzienda($azienda, $stabilimento){
 	$q = "SELECT td.tipidocumentiid,
 		tda.kp_stato_tipo_doc_a,
 		tda.kp_data_inizio,
-		tda.kp_data_fine
+		tda.kp_data_fine,
+		ent.smownerid assegnatario
 		FROM {$table_prefix}_kptipidocumentiaziend tda
 		INNER JOIN {$table_prefix}_tipidocumenti td ON td.tipidocumentiid = tda.kp_tipo_documento
 		INNER JOIN {$table_prefix}_crmentity ent ON ent.crmid = tda.kptipidocumentiaziendid
@@ -3409,29 +3453,36 @@ function getTipiDocumentiAzienda($azienda, $stabilimento){
 		if($data_fine == null || $data_fine == '0000-00-00'){
 			$data_fine = "";
 		}
+		
+		$assegnatario = $adb->query_result($res, $i, 'assegnatario');
+		$assegnatario = html_entity_decode(strip_tags($assegnatario), ENT_QUOTES, $default_charset);
 
 		if($data_inizio != "" && $data_fine != "" && $data_corrente >= $data_inizio && $data_corrente <= $data_fine){
 			$result[] = array(
 				'id' => $tipo_documento,
-				'stato' => $stato_tipo_documento
+				'stato' => $stato_tipo_documento,
+				'assegnatario' => $assegnatario
 			);
 		}
 		elseif($data_inizio == "" && $data_fine != "" && $data_corrente <= $data_fine){
 			$result[] = array(
 				'id' => $tipo_documento,
-				'stato' => $stato_tipo_documento
+				'stato' => $stato_tipo_documento,
+				'assegnatario' => $assegnatario
 			);
 		}
 		elseif($data_inizio != "" && $data_fine == "" && $data_corrente >= $data_inizio){
 			$result[] = array(
 				'id' => $tipo_documento,
-				'stato' => $stato_tipo_documento
+				'stato' => $stato_tipo_documento,
+				'assegnatario' => $assegnatario
 			);
 		}
 		elseif($data_inizio == "" && $data_fine == ""){
 			$result[] = array(
 				'id' => $tipo_documento,
-				'stato' => $stato_tipo_documento
+				'stato' => $stato_tipo_documento,
+				'assegnatario' => $assegnatario
 			);
 		}
 		
@@ -3441,7 +3492,7 @@ function getTipiDocumentiAzienda($azienda, $stabilimento){
 	
 }
 
-function calcolaSituazioneDocumentiTipoDocumento($account, $stabilimento, $tipo_documento, $stato_tipo_documento, $giorni_in_scadenza, $aggiorna){
+function calcolaSituazioneDocumentiTipoDocumento($account, $stabilimento, $tipo_documento, $stato_tipo_documento, $giorni_in_scadenza, $aggiorna, $assegnatario = 1){
     global $adb, $table_prefix, $current_user, $default_charset;
     
     /* kpro@bid24052018 */
@@ -3478,7 +3529,7 @@ function calcolaSituazioneDocumentiTipoDocumento($account, $stabilimento, $tipo_
             
     if($aggiorna == "si"){
 		
-		setSituazioneDocumenti($account, $stabilimento, $tipo_documento, $data_documento, $validita_documento, $stato_documento, $stato_tipo_documento, $nota_stato, $lista_documenti_redatti);
+		setSituazioneDocumenti($account, $stabilimento, $tipo_documento, $data_documento, $validita_documento, $stato_documento, $stato_tipo_documento, $nota_stato, $lista_documenti_redatti, $assegnatario);
         
     }
     
@@ -3674,11 +3725,15 @@ function verificaRelazioneDocumentoStabilimento($stabilimento, $notesid){
 	return $result;
 }
 
-function setSituazioneDocumenti($account, $stabilimento, $tipo_documento, $data_documento, $validita_documento, $stato_documento, $stato_tipo_documento, $nota_stato, $lista_documenti_redatti){
+function setSituazioneDocumenti($account, $stabilimento, $tipo_documento, $data_documento, $validita_documento, $stato_documento, $stato_tipo_documento, $nota_stato, $lista_documenti_redatti, $assegnatario = 1){
 	global $adb, $table_prefix, $current_user, $default_charset;
 	
 	$kpsituazionedocumentiid = 0;
 	$normativa = 0;	
+	
+	if( $assegnatario == 0 || $assegnatario == "" ){
+		$assegnatario = 1;
+	}
 
 	$documento = $lista_documenti_redatti[0]['id'];
 	if($documento == '' || $documento == null){
@@ -3717,12 +3772,17 @@ function setSituazioneDocumenti($account, $stabilimento, $tipo_documento, $data_
 				WHERE kpsituazionedocumentiid = ".$kpsituazionedocumentiid;
 		$adb->query($upd);
 		
+		$upd = "UPDATE {$table_prefix}_crmentity SET
+				smownerid = ".$assegnatario."
+				WHERE crmid = ".$kpsituazionedocumentiid;
+		$adb->query($upd);
+		
 		echo "<br>----------- AGGIORNATO record ".$kpsituazionedocumentiid."<br>";
 	}
 	else{
 		
 		$new_situazione_documenti = CRMEntity::getInstance('KpSituazioneDocumenti'); 
-		$new_situazione_documenti->column_fields['assigned_user_id'] = 1;
+		$new_situazione_documenti->column_fields['assigned_user_id'] = $assegnatario;
 		$new_situazione_documenti->column_fields['creator'] = 1;
 		if($account != "" && $account != 0){
 			$new_situazione_documenti->column_fields['kp_azienda'] = $account;
@@ -3781,7 +3841,7 @@ function calcolaSituazioneDocumentiFornitori(){
      * @copyright (c) 2018, Kpro Consulting Srl
      */
 	 
-	printf("<br />Calcolo situazione documenti fornitori iniziato!");
+	//printf("<br />Calcolo situazione documenti fornitori iniziato!");
 	 
 	$default_in_scadenza = 0;
 	 
@@ -3789,13 +3849,13 @@ function calcolaSituazioneDocumentiFornitori(){
 	
 	foreach($lista_fornitori as $fornitore){
 		
-		printf("<br />--- Fornitore: ".$fornitore['id']);
+		//printf("<br />--- Fornitore: ".$fornitore['id']);
 		
 		calcolaSituazioneDocumentiFornitoriFornitore($fornitore['id'], $default_in_scadenza);
 		
 	}
 	
-	printf("<br />Calcolo situazione documenti fornitori terminato!");
+	//printf("<br />Calcolo situazione documenti fornitori terminato!");
     
 }
 
@@ -3855,7 +3915,7 @@ function calcolaSituazioneDocumentiFornitoriFornitore($fornitore, $default_in_sc
 	
 	foreach($lista_risorse as $risorsa){
 		
-		printf("<br />----- Risorsa Fornitore: ".$risorsa['id']);
+		//printf("<br />----- Risorsa Fornitore: ".$risorsa['id']);
 		
 		calcolaSituazioneDocumentiFornitoriRisorsa($fornitore, $risorsa['id'], $default_in_scadenza);
 		
@@ -3925,11 +3985,11 @@ function calcolaSituazioneDocumentiFornitoriRisorsa($fornitore, $risorsa, $defau
 	
 	foreach($lista_tipi_documenti as $tipo_documento){
 		
-		printf("<br />--------- Tipo Documento: ".$tipo_documento['id']);
+		//printf("<br />--------- Tipo Documento: ".$tipo_documento['id']);
 
 		$giorni_in_scadenza = getGiorniInScadenzaFornitore($fornitore, $default_in_scadenza, 'Documenti', $tipo_documento['id']);
 
-		printf(" Giorni in scadenza: ".$giorni_in_scadenza);
+		//printf(" Giorni in scadenza: ".$giorni_in_scadenza);
 		
 		calcolaSituazioneDocumentiFornitoriTipoDocumento($fornitore, $risorsa, $tipo_documento['id'], $tipo_documento['stato'], $giorni_in_scadenza, "si");
 		
@@ -4034,7 +4094,7 @@ function calcolaSituazioneDocumentiFornitoriTipoDocumento($fornitore, $risorsa, 
 	 
 	$dati_tipo_documento = getDatiTipoDocumento($tipo_documento);
         
-    printf(", Nome: ".$dati_tipo_documento['nome'].", Validità: ".$dati_tipo_documento['validita']);
+    //printf(", Nome: ".$dati_tipo_documento['nome'].", Validità: ".$dati_tipo_documento['validita']);
     
     $lista_documenti_redatti = getDocumentiFornitoreRedattiRisorsaTipoDocumento($fornitore, $risorsa, $tipo_documento, $giorni_in_scadenza);
  
@@ -4060,7 +4120,7 @@ function calcolaSituazioneDocumentiFornitoriTipoDocumento($fornitore, $risorsa, 
 		
 	}
 	
-	printf("<br />----------- Stato: %s <br />----------- Data Documento: %s <br />----------- Data Validità: %s <br />----------- Nota: %s", $stato_documento, $data_documento, $validita_documento, $nota_stato);
+	//printf("<br />----------- Stato: %s <br />----------- Data Documento: %s <br />----------- Data Validità: %s <br />----------- Nota: %s", $stato_documento, $data_documento, $validita_documento, $nota_stato);
             
     if($aggiorna == "si"){
 		
@@ -4257,7 +4317,7 @@ function setSituazioneDocumentiFornitore($fornitore, $risorsa, $tipo_documento, 
 				WHERE kpsituazionedocfornitid = ".$kpsituazionedocfornitid;
 		$adb->query($upd);
 		
-		echo "<br>----------- AGGIORNATO record ".$kpsituazionedocfornitid."<br>";
+		//echo "<br>----------- AGGIORNATO record ".$kpsituazionedocfornitid."<br>";
 	}
 	else{
 		
@@ -4296,7 +4356,7 @@ function setSituazioneDocumentiFornitore($fornitore, $risorsa, $tipo_documento, 
 
 		$kpsituazionedocfornitid = $new_situazione_documenti->id;	
 		
-		echo "<br>----------- CREATO record ".$kpsituazionedocfornitid."<br>";
+		//echo "<br>----------- CREATO record ".$kpsituazionedocfornitid."<br>";
 	}
 
 	if($documento != "" && $documento != 0 && $stato_documento != ""){
