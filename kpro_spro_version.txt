@@ -134,6 +134,7 @@ S-PRO 3.0
 - 20/12/2018 kpro@tom201220181609 Serve ad evitare che un corso sia indicato come aggiornamento di se stesso creando un loop
 - 23/01/2019 kpro@tom230120190909 Correzione bug che portava l'opportunità a perdere l'agente
 - 24/01/2019 kpro@tom240120191400 Aggiunta gestione ritenuta d'acconto
+- 29/01/2019 kpro@tom290120190943 Gestione banca in fattura elettronica
 - 31/01/2019 kpro@tom310120191640 Gestione cassa previdenziale in fattura elettronica
 - 04/03/2019 kpro@tom040320190954 Al salvataggio della fattura effettuo il controllo di coerenza della data SOLO se la fattura non sipone già del numero
 - 04/03/2019 kpro@tom040320191010 Incremento a 4 decimali per l'XML fattura elettronica
@@ -147,3 +148,17 @@ S-PRO 3.0
 - 03/09/2019 kpro@tom030920190946 Problema lista risorse al cambio pagina, se due risorse avevano lo stesso cognome al cambio pagina la prima risorsa era l'ultima dell pagina precedente
 - 18/09/2019 kpro@tom180920191546 Problema aggiornamento situazione visite mediche con esiti privi di testata visita
 - 03/03/2020 kpro@tom030320201455 Problema invio pdf preventivo via mail
+
+S-PRO 4.0
+- 21/02/2019 kpro@tom210220191006 Gestione OdF anche per prodotti
+- 10/04/2019 kpro@tom100420191438 Modifica sittuazioni formazione affinché calcoli la scadenza della formazione dei corsi base non eseguiti a 60 giorni dalla data di assunzione
+- 17/04/2019 kpro@tom170420191701 Gestione bollo in fattura elettronica
+- 13/05/2019 kpro@tom130520190943 Gestione partecipazioni visite mediche
+- 30/05/2019 kpro@tom300520191506 Gestione evento cancellazione record con scrittura log cancellazione
+- 18/06/2019 kpro@tom180620191616 Abilitazione PDFMaker ad inviare mail con pdf anche da tablet
+- 26/06/2019 kpro@tom260620190941 Nelle righe ordine anziché caricare solo le tasse relazionate al servizio/prodotto carica tutte le tasse attive
+- 08/10/2019 kpro@tom081020191437 Gestione Budget
+- 09/12/2020 kpro@tom091220201000 Gestione Esigibilita IVA fattura elettronica
+- 15/12/2020 kpro@tom152020201807 Mancanza righe DdT: nella tabella vte_blocks manca la riga relativa al blocco LBL_RELATED_PRODUCTS quindi va aggiunta (attenzione: va incrementata anche la tabella vte_blocks_seq) 
+- 17/12/2020 kpro@tom171220201030 Campi description di lunghezza limitata: lanciare lo script plugins/script/script_correzione_campi_description.php per correggere tutti i campi description errati 
+- 17/12/2020 kpro@tom171220201531 Correzione campi data in esportazione excel dei report
